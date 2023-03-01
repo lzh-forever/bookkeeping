@@ -4,5 +4,11 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_bookkeeping">记账</string>
+    <string name="title_account">我的账户</string>
     <string name="hide_text">****</string>
+    <string name="summary_asserts">总资产</string>
+    <string name="summary_input">净投入</string>
+    <string name="summary_profit">累计收益</string>
+    <string name="default_num">0.00</string>
+    <string name="add_account">添加账户</string>
 </resources>

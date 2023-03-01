@@ -21,7 +21,7 @@ class BookKeepingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         viewModel = ViewModelProvider(this).get(BookKeepingViewModel::class.java)
-        return inflater.inflate(R.layout.book_keeping_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_book_keeping, container, false)
     }
 
 
