@@ -1,18 +1,14 @@
 package com.example.bookkeeping.view
 
 import android.content.Context
-import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.example.bookkeeping.R
-import com.example.bookkeeping.Repository
-import kotlinx.coroutines.coroutineScope
+import com.example.bookkeeping.data.Repository
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 
 class HidableTextView(context: Context, attrs: AttributeSet?) : AppCompatTextView(context, attrs) {
