@@ -2,26 +2,54 @@ package com.example.bookkeeping.ui.bookkeeping
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bookkeeping.R
+import com.example.bookkeeping.data.Repository
+import com.example.bookkeeping.databinding.FragmentBookKeepingBinding
 
 class BookKeepingFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = BookKeepingFragment()
-    }
+    private val viewModel by lazy { ViewModelProvider(this).get(BookKeepingViewModel::class.java) }
 
-    private lateinit var viewModel: BookKeepingViewModel
+    private var _binding: FragmentBookKeepingBinding? = null
+
+    private val binding
+        get() = _binding!!
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        viewModel = ViewModelProvider(this).get(BookKeepingViewModel::class.java)
-        return inflater.inflate(R.layout.fragment_book_keeping, container, false)
+    ): View {
+        _binding = FragmentBookKeepingBinding.inflate(inflater, container, false)
+
+        lifecycleScope.launchWhenCreated {
+            Repository.getAccountList()
+        }
+
+        binding.accountRv.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = AccountAdapter(emptyList())
+        }
+
+        viewModel.accountList.observe(viewLifecycleOwner) {
+            val adapter = binding.accountRv.adapter as AccountAdapter
+            adapter.updateList(it)
+            Log.d("flow","collect")
+        }
+
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
 

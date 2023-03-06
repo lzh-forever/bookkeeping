@@ -8,7 +8,8 @@ data class Account(
     @ColumnInfo(name = "account_name") val name: String,
     @ColumnInfo(name = "total_asset") val totalAsset: Double = 0.0,
     @ColumnInfo(name = "net_investment") val netInvestment: Double = 0.0,
-    @ColumnInfo(name = "profit") val profit: Double = 0.0
+    @ColumnInfo(name = "profit") val profit: Double = 0.0,
+    @ColumnInfo(name = "rate_of_return") val rate:Double = 0.0
 ) {
     fun updateFromRecords(records: List<Record>) = copy(
         id = id,
