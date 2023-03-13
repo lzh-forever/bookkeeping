@@ -18,7 +18,6 @@ class HidableTextView(context: Context, attrs: AttributeSet?) : AppCompatTextVie
 
     private var originalText: CharSequence
     private var mHide = false
-    private val TAG = "HidableTextView"
 
     init {
         originalText = text
@@ -26,7 +25,6 @@ class HidableTextView(context: Context, attrs: AttributeSet?) : AppCompatTextVie
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        Log.d(TAG, ViewTreeLifecycleOwner.get(this).toString() + " onAttachedToWindow")
         ViewTreeLifecycleOwner.get(this)?.lifecycleScope?.launchWhenCreated {
             Repository.hideFlow.collectLatest { hide ->
                 mHide = hide

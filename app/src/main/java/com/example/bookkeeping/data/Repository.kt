@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 
 object Repository {
     val hideFlow = MutableStateFlow(false)
-    val database by lazy { AppDatabase.getInstance(MyApplication.context) }
+    private val database by lazy { AppDatabase.getInstance(MyApplication.context) }
 
     fun getAccountList(): Flow<List<Account>> =
         database.accountDao().getAllAccounts().flowOn(Dispatchers.IO)
@@ -21,11 +21,18 @@ object Repository {
 //    fun getAccountList(): Flow<List<Account>> = flow {
 //        val list = ArrayList<Account>()
 //        list.apply {
-//            add(Account(1,"账户1",12000.0,10000.0,2000.0))
+//            add(Account("账户1",12000.0,10000.0,2000.0))
 //        }
 //        Log.d("flow","before emit")
 //        emit(list)
 //    }.flowOn(Dispatchers.IO)
+
+    suspend fun createAccount(accountName:String){
+        withContext(Dispatchers.IO){
+            database.accountDao().insert(Account(name = accountName))
+        }
+    }
+
 
 
 }

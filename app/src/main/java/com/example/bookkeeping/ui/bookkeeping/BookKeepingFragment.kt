@@ -2,16 +2,15 @@ package com.example.bookkeeping.ui.bookkeeping
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bookkeeping.R
-import com.example.bookkeeping.data.Repository
 import com.example.bookkeeping.databinding.FragmentBookKeepingBinding
+import com.example.bookkeeping.ui.account.AccountSettingFragment
 
 class BookKeepingFragment : Fragment() {
 
@@ -29,10 +28,6 @@ class BookKeepingFragment : Fragment() {
     ): View {
         _binding = FragmentBookKeepingBinding.inflate(inflater, container, false)
 
-        lifecycleScope.launchWhenCreated {
-            Repository.getAccountList()
-        }
-
         binding.accountRv.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = AccountAdapter(emptyList())
@@ -41,7 +36,18 @@ class BookKeepingFragment : Fragment() {
         viewModel.accountList.observe(viewLifecycleOwner) {
             val adapter = binding.accountRv.adapter as AccountAdapter
             adapter.updateList(it)
-            Log.d("flow","collect")
+        }
+
+        binding.addAccountBtn.setOnClickListener {
+            val navController = findNavController()
+            val bundle = Bundle().apply {
+                with(AccountSettingFragment){
+                    putString(ACCOUNT_NAME,"account")
+                    putInt(FROM, FROM_CREATE)
+                }
+            }
+            navController.navigate(R.id.action_bookkeeping_to_account_setting,bundle)
+
         }
 
         return binding.root

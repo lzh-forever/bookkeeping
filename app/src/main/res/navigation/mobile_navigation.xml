@@ -12,14 +12,24 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_bookkeeping"
         android:name="com.example.bookkeeping.ui.bookkeeping.BookKeepingFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:label="@string/title_bookkeeping"
+        tools:layout="@layout/fragment_book_keeping" >
+        <action
+            android:id="@+id/action_bookkeeping_to_account_setting"
+            app:destination="@id/navigation_account_setting" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.bookkeeping.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_account_setting"
+        android:name="com.example.bookkeeping.ui.account.AccountSettingFragment"
+        android:label="fragment_account"
+        tools:layout="@layout/fragment_account_setting" />
 </navigation>

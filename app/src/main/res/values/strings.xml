@@ -11,9 +11,15 @@
     <string name="summary_profit">累计收益</string>
     <string name="default_num">0.00</string>
     <string name="default_rate">暂无</string>
-    <string name="add_account">添加账户</string>
+    <string name="add_account">新建账户</string>
+    <string name="account_setting">账户设置</string>
     <string name="account_name">账户名称</string>
     <string name="account_asserts">账户资产</string>
     <string name="account_profit">累计收益</string>
     <string name="account_rate_of_return">年化收益率</string>
+    <string name="account_name_hint">起个名字吧</string>
+    <string name="save">保存</string>
+    <string name="create">创建</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
