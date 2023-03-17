@@ -3,6 +3,7 @@ package com.example.bookkeeping.data.room.dao
 import androidx.room.*
 import com.example.bookkeeping.data.room.entity.Account
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 @Dao
 interface AccountDao {
@@ -17,7 +18,7 @@ interface AccountDao {
     suspend fun delete(account: Account)
 
     @Query("SELECT * FROM accounts WHERE id = :id")
-    suspend fun getAccountById(id: Long): Account
+    suspend fun getAccountById(id: UUID): Account
 
     @Query("SELECT * FROM accounts")
     fun getAllAccounts(): Flow<List<Account>>

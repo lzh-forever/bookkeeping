@@ -15,10 +15,16 @@
         android:id="@+id/navigation_bookkeeping"
         android:name="com.example.bookkeeping.ui.bookkeeping.BookKeepingFragment"
         android:label="@string/title_bookkeeping"
-        tools:layout="@layout/fragment_book_keeping" >
+        tools:layout="@layout/fragment_book_keeping">
         <action
             android:id="@+id/action_bookkeeping_to_account_setting"
             app:destination="@id/navigation_account_setting" />
+        <action
+            android:id="@+id/action_bookkeeping_to_account_detail"
+            app:destination="@id/navigation_account_detail" />
+        <action
+            android:id="@+id/action_bookkeeping_to_record"
+            app:destination="@id/navigation_record" />
     </fragment>
 
     <fragment
@@ -30,6 +36,19 @@
     <fragment
         android:id="@+id/navigation_account_setting"
         android:name="com.example.bookkeeping.ui.account.AccountSettingFragment"
-        android:label="fragment_account"
         tools:layout="@layout/fragment_account_setting" />
+
+    <fragment
+        android:id="@+id/navigation_account_detail"
+        android:name="com.example.bookkeeping.ui.account.AccountDetailFragment"
+        tools:layout="@layout/fragment_account_detail">
+        <action
+            android:id="@+id/action_account_detail_to_record"
+            app:destination="@id/navigation_record" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_record"
+        android:name="com.example.bookkeeping.ui.record.RecordFragment"
+        tools:layout="@layout/fragment_record" />
 </navigation>

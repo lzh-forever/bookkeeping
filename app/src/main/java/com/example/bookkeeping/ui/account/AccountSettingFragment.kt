@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.navigateUp
+import com.example.bookkeeping.R
 import com.example.bookkeeping.databinding.FragmentAccountSettingBinding
+import com.example.bookkeeping.view.SettingBar
 
 
 class AccountSettingFragment : Fragment() {
@@ -40,6 +42,20 @@ class AccountSettingFragment : Fragment() {
     ): View {
         _binding = FragmentAccountSettingBinding.inflate(inflater, container, false)
 
+        binding.accountSettingBar.setType(from)
+        if (from == FROM_CREATE) {
+            binding.accountSettingBar.setText(resources.getText(R.string.add_account))
+            binding.createBtn.visibility = View.VISIBLE
+            buttonEnabledObserve()
+        } else if (from == FROM_SETTING) {
+            binding.accountSettingBar.setText(resources.getText(R.string.account_setting))
+            binding.nameTv.setText(name)
+        }
+
+        return binding.root
+    }
+
+    private fun buttonEnabledObserve() {
         binding.nameTv.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
@@ -51,28 +67,13 @@ class AccountSettingFragment : Fragment() {
 
         })
 
-        if (from == FROM_CREATE) {
-            binding.accountSettingBar.saveBtn.visibility = View.GONE
-            viewModel.completed.observe(viewLifecycleOwner) {
-                binding.createBtn.isEnabled = it
-            }
-            binding.createBtn.setOnClickListener {
-                viewModel.addAccount(binding.nameTv.text.toString())
-                findNavController().navigateUp()
-            }
-        } else if (from == FROM_DETAIL) {
-            binding.createBtn.visibility = View.GONE
-            binding.nameTv.setText(name)
-            binding.accountSettingBar.saveBtn.setOnClickListener {
-                // TODO:  
-            }
+        viewModel.completed.observe(viewLifecycleOwner) {
+            binding.createBtn.isEnabled = it
         }
-
-        binding.accountSettingBar.backBtn.setOnClickListener {
+        binding.createBtn.setOnClickListener {
+            viewModel.addAccount(binding.nameTv.text.toString())
             findNavController().navigateUp()
         }
-
-        return binding.root
     }
 
     override fun onDestroyView() {
@@ -83,7 +84,7 @@ class AccountSettingFragment : Fragment() {
     companion object {
         const val ACCOUNT_NAME = "account_name"
         const val FROM = "from"
-        const val FROM_CREATE = 0
-        const val FROM_DETAIL = 1
+        const val FROM_CREATE = SettingBar.TYPE_WITHOUT_BTN
+        const val FROM_SETTING = SettingBar.TYPE_WITH_SAVE_BTN
     }
 }

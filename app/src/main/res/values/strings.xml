@@ -5,6 +5,7 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_bookkeeping">记账</string>
     <string name="title_account">我的账户</string>
+    <string name="title_record">记录</string>
     <string name="hide_text">****</string>
     <string name="summary_asserts">总资产</string>
     <string name="summary_input">净投入</string>
@@ -20,6 +21,14 @@
     <string name="account_name_hint">起个名字吧</string>
     <string name="save">保存</string>
     <string name="create">创建</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="type_update">更新资产</string>
+    <string name="type_transfer_in">转入</string>
+    <string name="type_transfer_out">转出</string>
+    <string name="transfer">转入/转出</string>
+    <string name="update">更新资产</string>
+    <string name="go_to_record">去记账</string>
+    <string name="date">日期</string>
+    <string name="account_asserts_hint">请输入金额</string>
+    <string name="confirm">确定</string>
+    <string name="init_asserts">初始资产</string>
 </resources>

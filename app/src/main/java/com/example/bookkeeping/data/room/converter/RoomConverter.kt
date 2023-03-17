@@ -2,8 +2,9 @@ package com.example.bookkeeping.data.room.converter
 
 import androidx.room.TypeConverter
 import java.time.LocalDate
+import java.util.*
 
-class LocalDateConverter {
+class RoomConverter {
     @TypeConverter
     fun toDate(timestamp: Long?): LocalDate? {
         return if (timestamp == null) null else LocalDate.ofEpochDay(timestamp)
