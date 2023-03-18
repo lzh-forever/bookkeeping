@@ -19,6 +19,8 @@ class SettingBar(context: Context, attrs: AttributeSet) : ConstraintLayout(conte
     private val backBtn: ImageButton
     private val saveBtn: Button
     private val title: TextView
+    private var settingBlock: (() -> Unit)? = null
+    private var saveBlock: (() -> Unit)? = null
 
     init {
         val view = LayoutInflater.from(context).inflate(R.layout.layout_account_setting_bar, this)
@@ -37,10 +39,10 @@ class SettingBar(context: Context, attrs: AttributeSet) : ConstraintLayout(conte
                 findNavController().navigateUp()
             }
             saveBtn -> {
-
+                saveBlock?.invoke()
             }
             settingBtn -> {
-
+                settingBlock?.invoke()
             }
         }
     }
@@ -64,6 +66,14 @@ class SettingBar(context: Context, attrs: AttributeSet) : ConstraintLayout(conte
 
     fun setText(s: CharSequence) {
         title.text = s
+    }
+
+    fun setSettingBlock(block: (() -> Unit)? = null) {
+        settingBlock = block
+    }
+
+    fun setSaveBlock(block: (() -> Unit)? = null) {
+        saveBlock = block
     }
 
     companion object {

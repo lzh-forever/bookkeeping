@@ -39,15 +39,12 @@ class BookKeepingFragment : Fragment() {
         }
 
         binding.addAccountBtn.setOnClickListener {
-            val navController = findNavController()
             val bundle = Bundle().apply {
                 with(AccountSettingFragment){
-                    putString(ACCOUNT_NAME,"account")
                     putInt(FROM, FROM_CREATE)
                 }
             }
-            navController.navigate(R.id.action_bookkeeping_to_account_setting,bundle)
-
+            findNavController().navigate(R.id.action_bookkeeping_to_account_setting,bundle)
         }
 
         return binding.root

@@ -26,7 +26,7 @@ class RecordFragment : Fragment() {
     private lateinit var recordType: RecordType
     private var accountAsserts: String? = null
 
-    private val TAG = "RecordFragment"
+
     private val viewModel by lazy { ViewModelProvider(this).get(RecordViewModel::class.java) }
 
     private var _binding: FragmentRecordBinding? = null
@@ -41,10 +41,6 @@ class RecordFragment : Fragment() {
                 recordType = it.getSerializable(RECORD_TYPE) as RecordType
                 accountAsserts = it.getString(ACCOUNT_ASSERTS)
                 Log.d("database", " recordFragment  $accountId  $recordType  $accountAsserts")
-            }
-            if (!::accountId.isInitialized || !::recordType.isInitialized) {
-                showArgsExceptionToast(TAG)
-                findNavController().navigateUp()
             }
         } catch (e: Exception) {
             showArgsExceptionToast(TAG)
@@ -125,6 +121,7 @@ class RecordFragment : Fragment() {
     }
 
     companion object {
+        private const val TAG = "RecordFragment"
         const val ACCOUNT_ID = "account_id"
         const val RECORD_TYPE = "record_type"
         const val ACCOUNT_ASSERTS = "account_asserts"

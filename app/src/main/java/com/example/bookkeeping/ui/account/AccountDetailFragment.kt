@@ -30,7 +30,6 @@ class AccountDetailFragment : Fragment() {
     private val binding
         get() = _binding!!
 
-    private val TAG = "AccountDetailFragment"
 
     private lateinit var accountId: UUID
     private var mAccount:Account? = null
@@ -40,10 +39,6 @@ class AccountDetailFragment : Fragment() {
         try {
             arguments?.let {
                 accountId = UUID.fromString(it.getString(RecordFragment.ACCOUNT_ID))
-            }
-            if (!::accountId.isInitialized) {
-                showArgsExceptionToast(TAG)
-                findNavController().navigateUp()
             }
         } catch (e: Exception) {
             showArgsExceptionToast(TAG)
@@ -76,7 +71,15 @@ class AccountDetailFragment : Fragment() {
     private fun initSettingBar() {
         binding.settingBar.setType(SettingBar.TYPE_WITH_SETTING_BTN)
         binding.settingBar.setText(resources.getText(R.string.account_detail))
-        // TODO: 设置按钮
+        binding.settingBar.setSettingBlock {
+            val bundle = Bundle().apply{
+                with(AccountSettingFragment){
+                    putParcelable(ACCOUNT,mAccount)
+                    putInt(FROM, FROM_SETTING)
+                }
+            }
+            findNavController().navigate(R.id.action_account_detail_to_account_setting,bundle)
+        }
     }
 
     private fun initAccountDetail(account:Account) {
@@ -122,6 +125,7 @@ class AccountDetailFragment : Fragment() {
     }
 
     companion object {
+        private const val TAG = "AccountDetailFragment"
         const val ACCOUNT_ID = "account_id"
         const val RESULT_RECORD = "result_record"
     }

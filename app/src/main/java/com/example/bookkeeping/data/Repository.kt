@@ -44,6 +44,12 @@ object Repository {
             database.accountDao().getAccountById(id)
         }
 
+    suspend fun updateAccount(account: Account){
+        withContext(Dispatchers.IO){
+            database.accountDao().update(account)
+        }
+    }
+
 
     suspend fun addRecord(record: Record, account: Account? = null) {
         withContext(Dispatchers.IO) {

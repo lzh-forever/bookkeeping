@@ -12,8 +12,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.navigateUp
 import com.example.bookkeeping.R
+import com.example.bookkeeping.data.room.entity.Account
 import com.example.bookkeeping.databinding.FragmentAccountSettingBinding
+import com.example.bookkeeping.ui.record.RecordFragment
+import com.example.bookkeeping.util.showArgsExceptionToast
 import com.example.bookkeeping.view.SettingBar
+import java.util.UUID
 
 
 class AccountSettingFragment : Fragment() {
@@ -21,18 +25,25 @@ class AccountSettingFragment : Fragment() {
     private val viewModel by lazy { ViewModelProvider(this).get(AccountSettingViewModel::class.java) }
 
     private var _binding: FragmentAccountSettingBinding? = null
-
     private val binding
         get() = _binding!!
 
-    private var name: String? = null
     private var from: Int = 0
+    private lateinit var account: Account
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            name = it.getString(ACCOUNT_NAME)
             from = it.getInt(FROM)
+        }
+        if (from == FROM_SETTING) {
+            try {
+                account = arguments?.getParcelable(ACCOUNT) ?: throw Exception("account is null")
+            } catch (e: Exception) {
+                showArgsExceptionToast(TAG)
+                Log.d(TAG, e.toString())
+                findNavController().navigateUp()
+            }
         }
     }
 
@@ -42,17 +53,31 @@ class AccountSettingFragment : Fragment() {
     ): View {
         _binding = FragmentAccountSettingBinding.inflate(inflater, container, false)
 
-        binding.accountSettingBar.setType(from)
+        initSettingBar()
+
         if (from == FROM_CREATE) {
-            binding.accountSettingBar.setText(resources.getText(R.string.add_account))
             binding.createBtn.visibility = View.VISIBLE
             buttonEnabledObserve()
         } else if (from == FROM_SETTING) {
-            binding.accountSettingBar.setText(resources.getText(R.string.account_setting))
-            binding.nameTv.setText(name)
+            binding.nameTv.setText(account.name)
         }
 
         return binding.root
+    }
+
+    private fun initSettingBar() {
+        with(binding.accountSettingBar) {
+            setType(from)
+            if (from == FROM_CREATE) {
+                setText(resources.getText(R.string.add_account))
+            } else if (from == FROM_SETTING) {
+                setText(resources.getText(R.string.account_setting))
+                setSaveBlock {
+                    viewModel.updateAccount(binding.nameTv.text.toString(), account)
+                    findNavController().navigateUp()
+                }
+            }
+        }
     }
 
     private fun buttonEnabledObserve() {
@@ -82,7 +107,8 @@ class AccountSettingFragment : Fragment() {
     }
 
     companion object {
-        const val ACCOUNT_NAME = "account_name"
+        private const val TAG = "AccountSettingFragment"
+        const val ACCOUNT = "account"
         const val FROM = "from"
         const val FROM_CREATE = SettingBar.TYPE_WITHOUT_BTN
         const val FROM_SETTING = SettingBar.TYPE_WITH_SAVE_BTN

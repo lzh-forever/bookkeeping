@@ -45,6 +45,9 @@
         <action
             android:id="@+id/action_account_detail_to_record"
             app:destination="@id/navigation_record" />
+        <action
+            android:id="@+id/action_account_detail_to_account_setting"
+            app:destination="@id/navigation_account_setting" />
     </fragment>
 
     <fragment
