@@ -10,7 +10,6 @@ import com.example.bookkeeping.util.updateAccountWhenInsertAmountRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -21,6 +20,9 @@ object Repository {
 
     fun getAccountList(): Flow<List<Account>> =
         database.accountDao().getAllAccounts().flowOn(Dispatchers.IO)
+
+    fun getAccountFlowById(id: UUID): Flow<Account> =
+        database.accountDao().getAccountFlowById(id).flowOn(Dispatchers.IO)
 
 //    fun getAccountList(): Flow<List<Account>> = flow {
 //        val list = ArrayList<Account>()
@@ -43,15 +45,15 @@ object Repository {
         }
 
 
-    suspend fun addRecord(record: Record) {
+    suspend fun addRecord(record: Record, account: Account? = null) {
         withContext(Dispatchers.IO) {
-            val account = database.accountDao().getAccountById(record.accountId)
-            Log.d("database", account.toString())
+            val updateAccount = account ?: database.accountDao().getAccountById(record.accountId)
+            Log.d("database", updateAccount.toString())
             val latestRecord = database.recordDao()
-                .getLatestRecordByAccountAndType(account.id, RecordType.CURRENT_AMOUNT)
+                .getLatestRecordByAccountAndType(updateAccount.id, RecordType.CURRENT_AMOUNT)
             Log.d("database", latestRecord.toString())
             database.recordDao().insert(record)
-            updateAccountWhenInsertAmountRecord(account, record, latestRecord)?.let {
+            updateAccountWhenInsertAmountRecord(updateAccount, record, latestRecord)?.let {
                 database.accountDao().update(it)
             }
 

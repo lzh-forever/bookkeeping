@@ -14,14 +14,19 @@ import com.example.bookkeeping.R
 import com.example.bookkeeping.data.room.entity.Record
 import com.example.bookkeeping.data.room.entity.RecordType
 import com.example.bookkeeping.databinding.FragmentRecordBinding
+import com.example.bookkeeping.ui.account.AccountDetailFragment
+import com.example.bookkeeping.util.setNavigationResult
+import com.example.bookkeeping.util.showArgsExceptionToast
 import com.example.bookkeeping.view.SettingBar
 import java.util.*
 
 class RecordFragment : Fragment() {
 
-    lateinit var accountId: UUID
-    lateinit var recordType: RecordType
+    private lateinit var accountId: UUID
+    private lateinit var recordType: RecordType
+    private var accountAsserts: String? = null
 
+    private val TAG = "RecordFragment"
     private val viewModel by lazy { ViewModelProvider(this).get(RecordViewModel::class.java) }
 
     private var _binding: FragmentRecordBinding? = null
@@ -30,11 +35,24 @@ class RecordFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            accountId = UUID.fromString(it.getString(ACCOUNT_ID))
-            recordType = it.getSerializable(RECORD_TYPE) as RecordType
-            Log.d("database"," recordFragment  id: $accountId  $recordType")
+        try {
+            arguments?.let {
+                accountId = UUID.fromString(it.getString(ACCOUNT_ID))
+                recordType = it.getSerializable(RECORD_TYPE) as RecordType
+                accountAsserts = it.getString(ACCOUNT_ASSERTS)
+                Log.d("database", " recordFragment  $accountId  $recordType  $accountAsserts")
+            }
+            if (!::accountId.isInitialized || !::recordType.isInitialized) {
+                showArgsExceptionToast(TAG)
+                findNavController().navigateUp()
+            }
+        } catch (e: Exception) {
+            showArgsExceptionToast(TAG)
+            Log.d(TAG, e.toString())
+            findNavController().navigateUp()
         }
+
+
     }
 
     override fun onCreateView(
@@ -45,6 +63,7 @@ class RecordFragment : Fragment() {
 
         initSettingBar()
 
+
         buttonEnabledObserve()
 
         initClickListener()
@@ -53,14 +72,27 @@ class RecordFragment : Fragment() {
     }
 
     private fun initClickListener() {
-        binding.recordBtn.setOnClickListener {
-            if (::accountId.isInitialized && ::recordType.isInitialized) {
+        if (accountAsserts.isNullOrEmpty()) {
+            //第一次记账
+            binding.recordBtn.setOnClickListener {
                 val record = Record(
                     date = binding.datePicker.localDate,
                     type = recordType, amount = binding.assertsTv.text.toString().toDouble(),
                     accountId = accountId, id = UUID.randomUUID()
                 )
                 viewModel.addRecord(record)
+                findNavController().navigateUp()
+            }
+        } else {
+            //详情页跳转记账
+            binding.assertsTv.hint = accountAsserts
+            binding.recordBtn.setOnClickListener {
+                val record = Record(
+                    date = binding.datePicker.localDate,
+                    type = recordType, amount = binding.assertsTv.text.toString().toDouble(),
+                    accountId = accountId, id = UUID.randomUUID()
+                )
+                setNavigationResult(AccountDetailFragment.RESULT_RECORD,record)
                 findNavController().navigateUp()
             }
         }
@@ -95,5 +127,6 @@ class RecordFragment : Fragment() {
     companion object {
         const val ACCOUNT_ID = "account_id"
         const val RECORD_TYPE = "record_type"
+        const val ACCOUNT_ASSERTS = "account_asserts"
     }
 }

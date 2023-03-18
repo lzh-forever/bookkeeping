@@ -29,6 +29,7 @@ class MyDatePicker(context: Context, attrs: AttributeSet) : CardView(context, at
         text.text = localDate.toString() + TODAY
         datePickerDialog =
             DatePickerDialog(context).apply { setOnDateSetListener(this@MyDatePicker) }
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
         setOnClickListener(this)
     }
 

@@ -1,14 +1,25 @@
 package com.example.bookkeeping.ui.account
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.bookkeeping.R
+import com.example.bookkeeping.data.room.entity.Account
+import com.example.bookkeeping.data.room.entity.Record
+import com.example.bookkeeping.data.room.entity.RecordType
 import com.example.bookkeeping.databinding.FragmentAccountDetailBinding
+import com.example.bookkeeping.ui.record.RecordFragment
+import com.example.bookkeeping.util.clearResult
+import com.example.bookkeeping.util.getFormattedDouble
+import com.example.bookkeeping.util.getNavigationResult
+import com.example.bookkeeping.util.showArgsExceptionToast
 import com.example.bookkeeping.view.SettingBar
+import java.util.UUID
 
 
 class AccountDetailFragment : Fragment() {
@@ -19,14 +30,25 @@ class AccountDetailFragment : Fragment() {
     private val binding
         get() = _binding!!
 
-    private var param1: String? = null
-    private var param2: String? = null
+    private val TAG = "AccountDetailFragment"
+
+    private lateinit var accountId: UUID
+    private var mAccount:Account? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString("ARG_PARAM1")
-            param2 = it.getString("ARG_PARAM2")
+        try {
+            arguments?.let {
+                accountId = UUID.fromString(it.getString(RecordFragment.ACCOUNT_ID))
+            }
+            if (!::accountId.isInitialized) {
+                showArgsExceptionToast(TAG)
+                findNavController().navigateUp()
+            }
+        } catch (e: Exception) {
+            showArgsExceptionToast(TAG)
+            Log.d(TAG, e.toString())
+            findNavController().navigateUp()
         }
     }
 
@@ -36,9 +58,63 @@ class AccountDetailFragment : Fragment() {
     ): View {
         _binding = FragmentAccountDetailBinding.inflate(inflater, container, false)
 
-        binding.settingBar.setType(SettingBar.TYPE_WITH_SETTING_BTN)
+        initSettingBar()
+
+        viewModel.getAccountFlowById(accountId).observe(viewLifecycleOwner){ account ->
+            account?.let {
+                mAccount = it
+                initAccountDetail(it)
+            }
+        }
+
+        initRecord()
+        resultObserve()
+
         return binding.root
     }
+
+    private fun initSettingBar() {
+        binding.settingBar.setType(SettingBar.TYPE_WITH_SETTING_BTN)
+        binding.settingBar.setText(resources.getText(R.string.account_detail))
+        // TODO: 设置按钮
+    }
+
+    private fun initAccountDetail(account:Account) {
+        binding.nameTv.setText(account.name)
+        with(binding.assertsLayout) {
+            assertsTv.setHidableText(getFormattedDouble(account.totalAsset))
+            transferBtn.setOnClickListener { }
+            updateBtn.setOnClickListener {
+                val bundle = Bundle().apply {
+                    putString(RecordFragment.ACCOUNT_ID, account.id.toString())
+                    putSerializable(RecordFragment.RECORD_TYPE, RecordType.CURRENT_AMOUNT)
+                    putString(
+                        RecordFragment.ACCOUNT_ASSERTS,
+                        getFormattedDouble(account.totalAsset)
+                    )
+                }
+                findNavController().navigate(R.id.action_account_detail_to_record, bundle)
+            }
+        }
+        with(binding.profitLayout) {
+            profitTv.setHidableText(getFormattedDouble(account.totalAsset - account.netInvestment))
+            // TODO: 收益率
+        }
+    }
+
+    private fun initRecord() {
+
+    }
+
+    private fun resultObserve() {
+        getNavigationResult<Record>(RESULT_RECORD)?.observe(viewLifecycleOwner) { record ->
+            if (record.accountId == accountId) {
+                viewModel.updateAsserts(record, mAccount)
+                clearResult<Record>(RESULT_RECORD)
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         _binding = null
@@ -47,6 +123,6 @@ class AccountDetailFragment : Fragment() {
 
     companion object {
         const val ACCOUNT_ID = "account_id"
-        const val FROM = "from"
+        const val RESULT_RECORD = "result_record"
     }
 }

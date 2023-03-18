@@ -20,6 +20,9 @@ interface AccountDao {
     @Query("SELECT * FROM accounts WHERE id = :id")
     suspend fun getAccountById(id: UUID): Account
 
+    @Query("SELECT * FROM accounts WHERE id = :id")
+    fun getAccountFlowById(id: UUID): Flow<Account>
+
     @Query("SELECT * FROM accounts")
     fun getAllAccounts(): Flow<List<Account>>
 }

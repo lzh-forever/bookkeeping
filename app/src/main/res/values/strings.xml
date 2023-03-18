@@ -19,6 +19,7 @@
     <string name="account_profit">累计收益</string>
     <string name="account_rate_of_return">年化收益率</string>
     <string name="account_name_hint">起个名字吧</string>
+    <string name="account_detail">账户详情</string>
     <string name="save">保存</string>
     <string name="create">创建</string>
     <string name="type_update">更新资产</string>
@@ -31,4 +32,5 @@
     <string name="account_asserts_hint">请输入金额</string>
     <string name="confirm">确定</string>
     <string name="init_asserts">初始资产</string>
+    <string name="args_exception">参数错误</string>
 </resources>

@@ -11,6 +11,7 @@ import com.example.bookkeeping.R
 import com.example.bookkeeping.data.room.entity.Account
 import com.example.bookkeeping.data.room.entity.RecordType
 import com.example.bookkeeping.databinding.ItemAccountBinding
+import com.example.bookkeeping.ui.account.AccountDetailFragment
 import com.example.bookkeeping.ui.record.RecordFragment
 import com.example.bookkeeping.util.getFormattedDouble
 import com.example.bookkeeping.util.getFormattedRate
@@ -48,11 +49,10 @@ class AccountAdapter(private var accountList: List<Account>) :
         Log.d("database", account.toString())
         holder.itemView.setOnClickListener {
             if (account.totalAsset > 0) {
-//                val bundle = Bundle().apply {
-//                    putSerializable(RecordFragment.RECORD_TYPE,RecordType.CURRENT_AMOUNT)
-//                    putString(RecordFragment.ACCOUNT_ID,account.id.toString())
-//                }
-                it.findNavController().navigate(R.id.action_bookkeeping_to_account_detail)
+                val bundle = Bundle().apply {
+                    putString(AccountDetailFragment.ACCOUNT_ID,account.id.toString())
+                }
+                it.findNavController().navigate(R.id.action_bookkeeping_to_account_detail,bundle)
             } else {
                 val bundle = Bundle().apply {
                     putSerializable(RecordFragment.RECORD_TYPE,RecordType.CURRENT_AMOUNT)
