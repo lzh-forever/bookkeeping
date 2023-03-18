@@ -7,7 +7,7 @@
     <string name="title_account">我的账户</string>
     <string name="title_record">记录</string>
     <string name="hide_text">****</string>
-    <string name="summary_asserts">总资产</string>
+    <string name="summary_asset">总资产</string>
     <string name="summary_input">净投入</string>
     <string name="summary_profit">累计收益</string>
     <string name="default_num">0.00</string>
@@ -15,7 +15,7 @@
     <string name="add_account">新建账户</string>
     <string name="account_setting">账户设置</string>
     <string name="account_name">账户名称</string>
-    <string name="account_asserts">账户资产</string>
+    <string name="account_asset">账户资产</string>
     <string name="account_profit">累计收益</string>
     <string name="account_rate_of_return">年化收益率</string>
     <string name="account_name_hint">起个名字吧</string>
@@ -29,8 +29,8 @@
     <string name="update">更新资产</string>
     <string name="go_to_record">去记账</string>
     <string name="date">日期</string>
-    <string name="account_asserts_hint">请输入金额</string>
+    <string name="account_asset_hint">请输入金额</string>
     <string name="confirm">确定</string>
-    <string name="init_asserts">初始资产</string>
+    <string name="init_asset">初始资产</string>
     <string name="args_exception">参数错误</string>
 </resources>

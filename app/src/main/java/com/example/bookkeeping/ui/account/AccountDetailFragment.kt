@@ -84,15 +84,15 @@ class AccountDetailFragment : Fragment() {
 
     private fun initAccountDetail(account:Account) {
         binding.nameTv.setText(account.name)
-        with(binding.assertsLayout) {
-            assertsTv.setHidableText(getFormattedDouble(account.totalAsset))
+        with(binding.assetLayout) {
+            assetTv.setHidableText(getFormattedDouble(account.totalAsset))
             transferBtn.setOnClickListener { }
             updateBtn.setOnClickListener {
                 val bundle = Bundle().apply {
                     putString(RecordFragment.ACCOUNT_ID, account.id.toString())
                     putSerializable(RecordFragment.RECORD_TYPE, RecordType.CURRENT_AMOUNT)
                     putString(
-                        RecordFragment.ACCOUNT_ASSERTS,
+                        RecordFragment.ACCOUNT_ASSET,
                         getFormattedDouble(account.totalAsset)
                     )
                 }
@@ -112,7 +112,7 @@ class AccountDetailFragment : Fragment() {
     private fun resultObserve() {
         getNavigationResult<Record>(RESULT_RECORD)?.observe(viewLifecycleOwner) { record ->
             if (record.accountId == accountId) {
-                viewModel.updateAsserts(record, mAccount)
+                viewModel.updateAsset(record, mAccount)
                 clearResult<Record>(RESULT_RECORD)
             }
         }

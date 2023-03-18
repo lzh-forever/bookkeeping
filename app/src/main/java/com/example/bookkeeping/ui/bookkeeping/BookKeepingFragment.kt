@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bookkeeping.R
 import com.example.bookkeeping.databinding.FragmentBookKeepingBinding
 import com.example.bookkeeping.ui.account.AccountSettingFragment
+import com.example.bookkeeping.util.getFormattedDouble
 
 class BookKeepingFragment : Fragment() {
 
@@ -32,22 +33,38 @@ class BookKeepingFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = AccountAdapter(emptyList())
         }
+        viewModel.getAccountListAndSum()
+        observeLiveData()
+        initClickListener()
 
-        viewModel.accountList.observe(viewLifecycleOwner) {
+        return binding.root
+    }
+
+    private fun observeLiveData() {
+        viewModel.accountListLiveData.observe(viewLifecycleOwner) {
             val adapter = binding.accountRv.adapter as AccountAdapter
             adapter.updateList(it)
         }
+        viewModel.totalAssetLiveData.observe(viewLifecycleOwner) {
+            binding.summaryLayout.assetTv.setHidableText(getFormattedDouble(it))
+        }
+        viewModel.netInvestmentLiveData.observe(viewLifecycleOwner) {
+            binding.summaryLayout.investmentTv.setHidableText(getFormattedDouble(it))
+        }
+        viewModel.profitLiveData.observe(viewLifecycleOwner) {
+            binding.summaryLayout.profitTv.setHidableText(getFormattedDouble(it))
+        }
+    }
 
+    private fun initClickListener() {
         binding.addAccountBtn.setOnClickListener {
             val bundle = Bundle().apply {
-                with(AccountSettingFragment){
+                with(AccountSettingFragment) {
                     putInt(FROM, FROM_CREATE)
                 }
             }
-            findNavController().navigate(R.id.action_bookkeeping_to_account_setting,bundle)
+            findNavController().navigate(R.id.action_bookkeeping_to_account_setting, bundle)
         }
-
-        return binding.root
     }
 
     override fun onDestroyView() {

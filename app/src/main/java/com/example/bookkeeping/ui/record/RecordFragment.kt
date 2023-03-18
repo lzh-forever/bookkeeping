@@ -24,7 +24,7 @@ class RecordFragment : Fragment() {
 
     private lateinit var accountId: UUID
     private lateinit var recordType: RecordType
-    private var accountAsserts: String? = null
+    private var accountAsset: String? = null
 
 
     private val viewModel by lazy { ViewModelProvider(this).get(RecordViewModel::class.java) }
@@ -39,8 +39,8 @@ class RecordFragment : Fragment() {
             arguments?.let {
                 accountId = UUID.fromString(it.getString(ACCOUNT_ID))
                 recordType = it.getSerializable(RECORD_TYPE) as RecordType
-                accountAsserts = it.getString(ACCOUNT_ASSERTS)
-                Log.d("database", " recordFragment  $accountId  $recordType  $accountAsserts")
+                accountAsset = it.getString(ACCOUNT_ASSET)
+                Log.d("database", " recordFragment  $accountId  $recordType  $accountAsset")
             }
         } catch (e: Exception) {
             showArgsExceptionToast(TAG)
@@ -68,12 +68,12 @@ class RecordFragment : Fragment() {
     }
 
     private fun initClickListener() {
-        if (accountAsserts.isNullOrEmpty()) {
+        if (accountAsset.isNullOrEmpty()) {
             //第一次记账
             binding.recordBtn.setOnClickListener {
                 val record = Record(
                     date = binding.datePicker.localDate,
-                    type = recordType, amount = binding.assertsTv.text.toString().toDouble(),
+                    type = recordType, amount = binding.assetTv.text.toString().toDouble(),
                     accountId = accountId, id = UUID.randomUUID()
                 )
                 viewModel.addRecord(record)
@@ -81,11 +81,11 @@ class RecordFragment : Fragment() {
             }
         } else {
             //详情页跳转记账
-            binding.assertsTv.hint = accountAsserts
+            binding.assetTv.hint = accountAsset
             binding.recordBtn.setOnClickListener {
                 val record = Record(
                     date = binding.datePicker.localDate,
-                    type = recordType, amount = binding.assertsTv.text.toString().toDouble(),
+                    type = recordType, amount = binding.assetTv.text.toString().toDouble(),
                     accountId = accountId, id = UUID.randomUUID()
                 )
                 setNavigationResult(AccountDetailFragment.RESULT_RECORD,record)
@@ -95,11 +95,11 @@ class RecordFragment : Fragment() {
     }
 
     private fun buttonEnabledObserve() {
-        binding.assertsTv.addTextChangedListener(object : TextWatcher {
+        binding.assetTv.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.onAssertsTextChanged(s)
+                viewModel.onAssetTextChanged(s)
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -112,7 +112,7 @@ class RecordFragment : Fragment() {
 
     private fun initSettingBar() {
         binding.accountSettingBar.setType(SettingBar.TYPE_WITHOUT_BTN)
-        binding.accountSettingBar.setText(resources.getText(R.string.init_asserts))
+        binding.accountSettingBar.setText(resources.getText(R.string.init_asset))
     }
 
     override fun onDestroyView() {
@@ -124,6 +124,6 @@ class RecordFragment : Fragment() {
         private const val TAG = "RecordFragment"
         const val ACCOUNT_ID = "account_id"
         const val RECORD_TYPE = "record_type"
-        const val ACCOUNT_ASSERTS = "account_asserts"
+        const val ACCOUNT_ASSET = "account_asserts"
     }
 }

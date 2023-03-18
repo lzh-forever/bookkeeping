@@ -5,44 +5,44 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/summary_asserts"
+        android:id="@+id/summary_asset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/summary_asserts"
+        android:text="@string/summary_asset"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.example.bookkeeping.view.HidableTextView
-        android:id="@+id/asserts_tv"
+        android:id="@+id/asset_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/default_num"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/summary_asserts" />
+        app:layout_constraintTop_toBottomOf="@id/summary_asset" />
 
     <TextView
-        android:id="@+id/summary_input"
+        android:id="@+id/summary_investment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/summary_input"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/asserts_tv" />
+        app:layout_constraintTop_toBottomOf="@id/asset_tv" />
 
     <com.example.bookkeeping.view.HidableTextView
-        android:id="@+id/input_tv"
+        android:id="@+id/investment_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/default_num"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/summary_input" />
+        app:layout_constraintTop_toBottomOf="@id/summary_investment" />
 
     <TextView
         android:id="@+id/summary_profit"
@@ -53,7 +53,7 @@
         android:layout_marginEnd="8dp"
         android:text="@string/summary_profit"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/asserts_tv" />
+        app:layout_constraintTop_toBottomOf="@id/asset_tv" />
 
     <com.example.bookkeeping.view.HidableTextView
         android:id="@+id/profit_tv"

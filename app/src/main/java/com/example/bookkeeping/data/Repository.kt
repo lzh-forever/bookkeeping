@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
@@ -20,6 +21,11 @@ object Repository {
 
     fun getAccountList(): Flow<List<Account>> =
         database.accountDao().getAllAccounts().flowOn(Dispatchers.IO)
+
+    fun getAccountListAndSum(): Flow<Triple<List<Account>, Double, Double>> =
+        database.accountDao().getAllAccounts().map { list ->
+            Triple(list, list.sumOf { it.totalAsset }, list.sumOf { it.netInvestment })
+        }.flowOn(Dispatchers.IO)
 
     fun getAccountFlowById(id: UUID): Flow<Account> =
         database.accountDao().getAccountFlowById(id).flowOn(Dispatchers.IO)
@@ -44,8 +50,8 @@ object Repository {
             database.accountDao().getAccountById(id)
         }
 
-    suspend fun updateAccount(account: Account){
-        withContext(Dispatchers.IO){
+    suspend fun updateAccount(account: Account) {
+        withContext(Dispatchers.IO) {
             database.accountDao().update(account)
         }
     }

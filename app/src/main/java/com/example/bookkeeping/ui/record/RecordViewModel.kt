@@ -11,17 +11,17 @@ import kotlinx.coroutines.launch
 
 class RecordViewModel: ViewModel() {
     val completed: LiveData<Boolean> = liveData {
-        assertsCompleteFlow.collect {
+        assetCompleteFlow.collect {
             emit(it)
         }
     }
 
-    private val assertsCompleteFlow = MutableStateFlow(false)
+    private val assetCompleteFlow = MutableStateFlow(false)
 
-    fun onAssertsTextChanged(s: CharSequence?) {
+    fun onAssetTextChanged(s: CharSequence?) {
         val res = !s.isNullOrEmpty()
-        if (assertsCompleteFlow.value != res) {
-            assertsCompleteFlow.value = res
+        if (assetCompleteFlow.value != res) {
+            assetCompleteFlow.value = res
         }
     }
 

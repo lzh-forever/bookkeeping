@@ -12,7 +12,7 @@ import java.util.UUID
 
 class AccountDetailViewModel : ViewModel() {
 
-    fun updateAsserts(record: Record, account: Account?) {
+    fun updateAsset(record: Record, account: Account?) {
         viewModelScope.launch {
             Repository.addRecord(record, account)
         }

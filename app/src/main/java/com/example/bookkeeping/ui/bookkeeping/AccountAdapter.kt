@@ -22,7 +22,7 @@ class AccountAdapter(private var accountList: List<Account>) :
     inner class AccountViewHolder(binding: ItemAccountBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val name = binding.accountName
-        val asserts = binding.assertsTv
+        val asset = binding.assetTv
         val profit = binding.profitTv
         val rate = binding.rateTv
     }
@@ -42,7 +42,7 @@ class AccountAdapter(private var accountList: List<Account>) :
         val account = accountList[position]
         holder.apply {
             name.text = account.name
-            asserts.setHidableText(getFormattedDouble(account.totalAsset))
+            asset.setHidableText(getFormattedDouble(account.totalAsset))
             profit.setHidableText(getFormattedDouble(account.totalAsset - account.netInvestment))
             rate.text = getFormattedRate(account.rate)
         }

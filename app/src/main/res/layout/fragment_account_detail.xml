@@ -25,7 +25,7 @@
         app:layout_constraintTop_toBottomOf="@id/setting_bar" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/asserts_card"
+        android:id="@+id/asset_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -33,8 +33,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/name_tv">
-        <include layout="@layout/layout_account_asserts"
-            android:id="@+id/asserts_layout"/>
+        <include layout="@layout/layout_account_asset"
+            android:id="@+id/asset_layout"/>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -45,7 +45,7 @@
         android:layout_marginHorizontal="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/asserts_card">
+        app:layout_constraintTop_toBottomOf="@id/asset_card">
         <include layout="@layout/layout_account_profit"
             android:id="@+id/profit_layout"/>
     </androidx.cardview.widget.CardView>
