@@ -33,4 +33,5 @@
     <string name="confirm">确定</string>
     <string name="init_asset">初始资产</string>
     <string name="args_exception">参数错误</string>
+    <string name="record_type">记录类型</string>
 </resources>

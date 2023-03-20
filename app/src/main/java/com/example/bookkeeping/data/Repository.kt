@@ -7,6 +7,7 @@ import com.example.bookkeeping.data.room.entity.Account
 import com.example.bookkeeping.data.room.entity.Record
 import com.example.bookkeeping.data.room.entity.RecordType
 import com.example.bookkeeping.util.updateAccountWhenInsertAmountRecord
+import com.example.bookkeeping.util.updateAccountWhenInsertTransferRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,14 +62,26 @@ object Repository {
         withContext(Dispatchers.IO) {
             val updateAccount = account ?: database.accountDao().getAccountById(record.accountId)
             Log.d("database", updateAccount.toString())
-            val latestRecord = database.recordDao()
-                .getLatestRecordByAccountAndType(updateAccount.id, RecordType.CURRENT_AMOUNT)
-            Log.d("database", latestRecord.toString())
-            database.recordDao().insert(record)
-            updateAccountWhenInsertAmountRecord(updateAccount, record, latestRecord)?.let {
-                database.accountDao().update(it)
-            }
+            val latestAmountRecord = database.recordDao()
+                .getLatestRecordByAccountAndType(
+                    updateAccount.id,
+                    RecordType.CURRENT_AMOUNT
+                )
+            when (record.type) {
+                RecordType.CURRENT_AMOUNT -> {
 
+                    Log.d("database", latestAmountRecord.toString())
+                    updateAccountWhenInsertAmountRecord(updateAccount, record, latestAmountRecord)?.let {
+                        database.accountDao().update(it)
+                    }
+                }
+                else -> {
+                    with(updateAccountWhenInsertTransferRecord(updateAccount,record,latestAmountRecord!!)){
+                        database.accountDao().update(this)
+                    }
+                }
+            }
+            database.recordDao().insert(record)
         }
     }
 

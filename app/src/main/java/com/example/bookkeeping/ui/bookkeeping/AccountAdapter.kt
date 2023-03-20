@@ -56,7 +56,7 @@ class AccountAdapter(private var accountList: List<Account>) :
             } else {
                 val bundle = Bundle().apply {
                     putSerializable(RecordFragment.RECORD_TYPE,RecordType.CURRENT_AMOUNT)
-                    putString(RecordFragment.ACCOUNT_ID,account.id.toString())
+                    putParcelable(RecordFragment.ACCOUNT,account)
                 }
                 it.findNavController().navigate(R.id.action_bookkeeping_to_record,bundle)
             }
