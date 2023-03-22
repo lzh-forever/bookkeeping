@@ -24,4 +24,10 @@ class AccountDetailViewModel : ViewModel() {
         }
     }
 
+    fun getRecordFlowById(id: UUID) = liveData<List<List<Record>>> {
+        Repository.getRecordFlowByAccountId(id).collectLatest {
+            emit(it)
+        }
+    }
+
 }

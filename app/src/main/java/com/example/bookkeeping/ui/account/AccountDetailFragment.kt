@@ -8,11 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bookkeeping.R
 import com.example.bookkeeping.data.room.entity.Account
 import com.example.bookkeeping.data.room.entity.Record
 import com.example.bookkeeping.data.room.entity.RecordType
 import com.example.bookkeeping.databinding.FragmentAccountDetailBinding
+import com.example.bookkeeping.ui.record.RecordAdapter
 import com.example.bookkeeping.ui.record.RecordFragment
 import com.example.bookkeeping.util.*
 import com.example.bookkeeping.view.SettingBar
@@ -102,7 +104,17 @@ class AccountDetailFragment : Fragment() {
     }
 
     private fun initRecord() {
-
+        binding.recordRv.apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+        viewModel.getRecordFlowById(accountId).observe(viewLifecycleOwner){
+            if (binding.recordRv.adapter == null){
+                binding.recordRv.adapter = RecordAdapter(it)
+            } else {
+                val adapter =binding.recordRv.adapter as RecordAdapter
+                adapter.updateList(it)
+            }
+        }
     }
 
     private fun jumpRecordFragment(recordType: RecordType) {
@@ -125,6 +137,5 @@ class AccountDetailFragment : Fragment() {
     companion object {
         private const val TAG = "AccountDetailFragment"
         const val ACCOUNT_ID = "account_id"
-        const val RESULT_RECORD = "result_record"
     }
 }

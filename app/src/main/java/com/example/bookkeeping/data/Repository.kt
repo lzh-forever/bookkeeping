@@ -9,10 +9,7 @@ import com.example.bookkeeping.data.room.entity.RecordType
 import com.example.bookkeeping.util.updateAccountWhenInsertAmountRecord
 import com.example.bookkeeping.util.updateAccountWhenInsertTransferRecord
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
@@ -24,9 +21,9 @@ object Repository {
         database.accountDao().getAllAccounts().flowOn(Dispatchers.IO)
 
     fun getAccountListAndSum(): Flow<Triple<List<Account>, Double, Double>> =
-        database.accountDao().getAllAccounts().map { list ->
+        database.accountDao().getAllAccounts().flowOn(Dispatchers.IO).map { list ->
             Triple(list, list.sumOf { it.totalAsset }, list.sumOf { it.netInvestment })
-        }.flowOn(Dispatchers.IO)
+        }.flowOn(Dispatchers.Default)
 
     fun getAccountFlowById(id: UUID): Flow<Account> =
         database.accountDao().getAccountFlowById(id).flowOn(Dispatchers.IO)
@@ -71,18 +68,44 @@ object Repository {
                 RecordType.CURRENT_AMOUNT -> {
 
                     Log.d("database", latestAmountRecord.toString())
-                    updateAccountWhenInsertAmountRecord(updateAccount, record, latestAmountRecord)?.let {
+                    updateAccountWhenInsertAmountRecord(
+                        updateAccount,
+                        record,
+                        latestAmountRecord
+                    )?.let {
                         database.accountDao().update(it)
                     }
                 }
                 else -> {
-                    with(updateAccountWhenInsertTransferRecord(updateAccount,record,latestAmountRecord!!)){
+                    with(
+                        updateAccountWhenInsertTransferRecord(
+                            updateAccount,
+                            record,
+                            latestAmountRecord!!
+                        )
+                    ) {
                         database.accountDao().update(this)
                     }
                 }
             }
             database.recordDao().insert(record)
         }
+    }
+
+    fun getRecordFlowByAccountId(
+        accountId: UUID,
+        limit: Int = 0
+    ): Flow<List<List<Record>>> {
+        if (limit < 0) {
+            return emptyFlow()
+        }
+        return if (limit == 0) {
+            database.recordDao().getRecordsByAccountId(accountId)
+        } else {
+            database.recordDao().getRecordsByAccountIdWithLimit(accountId, limit)
+        }.flowOn(Dispatchers.IO).map { records ->
+            records.groupBy { it.date }.map { it.value }
+        }.flowOn(Dispatchers.Default)
     }
 
 

@@ -11,6 +11,7 @@ fun updateAccountWhenInsertAmountRecord(
     account.copy(totalAsset = record.amount, netInvestment = record.amount)
 } else if (latestAmountRecord.date.isAfter(record.date)) {
     //晚于上次总额记录，不用更新
+    // TODO: 初始资产
     null
 } else {
     //更新总额
