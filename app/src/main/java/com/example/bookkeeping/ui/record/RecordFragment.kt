@@ -83,8 +83,9 @@ class RecordFragment : Fragment() {
                 accountId = account.id,
                 id = UUID.randomUUID()
             )
-            viewModel.addRecord(record, account)
-            findNavController().navigateUp()
+            viewModel.addRecord(record, account){
+                findNavController().navigateUp()
+            }
         }
         if (viewModel.recordTypeLiveData.value!!.isTransferType()) {
             binding.transferCard.visibility = View.VISIBLE

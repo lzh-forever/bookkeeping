@@ -12,11 +12,7 @@ import java.util.UUID
 
 class AccountDetailViewModel : ViewModel() {
 
-    fun updateAsset(record: Record, account: Account?) {
-        viewModelScope.launch {
-            Repository.addRecord(record, account)
-        }
-    }
+    private val limit = 3
 
     fun getAccountFlowById(id: UUID) = liveData<Account> {
         Repository.getAccountFlowById(id).collectLatest {
@@ -25,7 +21,7 @@ class AccountDetailViewModel : ViewModel() {
     }
 
     fun getRecordFlowById(id: UUID) = liveData<List<List<Record>>> {
-        Repository.getRecordFlowByAccountId(id).collectLatest {
+        Repository.getRecordFlowByAccountId(id,limit).collectLatest {
             emit(it)
         }
     }

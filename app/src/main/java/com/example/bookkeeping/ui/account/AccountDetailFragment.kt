@@ -99,7 +99,7 @@ class AccountDetailFragment : Fragment() {
         binding.assetLayout.assetTv.setHidableText(getFormattedDouble(mAccount.totalAsset))
         with(binding.profitLayout) {
             profitTv.setHidableText(getFormattedDouble(mAccount.totalAsset - mAccount.netInvestment))
-            // TODO: 收益率
+            rateTv.text = getFormattedRate(mAccount.rate)
         }
     }
 

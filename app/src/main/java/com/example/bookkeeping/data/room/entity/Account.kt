@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.*
 import com.example.bookkeeping.data.room.converter.RoomConverter
 import kotlinx.parcelize.Parcelize
+import java.time.LocalDate
 
 import java.util.UUID
 
@@ -16,16 +17,9 @@ data class Account(
     @ColumnInfo(name = "net_investment") val netInvestment: Double = 0.0,
     @ColumnInfo(name = "rate_of_return") val rate: Double = 0.0,
     @ColumnInfo(name = "id") val id: UUID = UUID.randomUUID(),
-    @PrimaryKey(autoGenerate = true) val databaseId:Int = 0
-):Parcelable {
-    fun updateFromRecords(records: List<Record>) = copy(
-        name = name,
-        totalAsset = records.sumOf { it.amount },
-        netInvestment = records.filter { it.type.isTransferType() }.sumOf { it.amount },
-    )
-
-
-
-
+    @PrimaryKey(autoGenerate = true) val databaseId: Int = 0,
+    @ColumnInfo(name = "init_date") val initDate: LocalDate? = null,
+    @ColumnInfo(name = "init_asset") val initAsset:Double = 0.0
+) : Parcelable {
 }
 

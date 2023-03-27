@@ -23,5 +23,4 @@ data class Record(
     @PrimaryKey(autoGenerate = true) val databaseId: Int = 0,
     @ColumnInfo(name = "create_time") val createTime:Long = System.currentTimeMillis()
 ) : Parcelable {
-
 }

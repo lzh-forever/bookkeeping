@@ -6,10 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import com.example.bookkeeping.MyApplication
+import com.example.bookkeeping.R
 import com.example.bookkeeping.data.Repository
 import com.example.bookkeeping.data.room.entity.Account
 import com.example.bookkeeping.data.room.entity.Record
 import com.example.bookkeeping.data.room.entity.RecordType
+import com.example.bookkeeping.util.showShortToast
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -32,9 +35,14 @@ class RecordViewModel: ViewModel() {
         }
     }
 
-    fun addRecord(record:Record,account: Account){
+    fun addRecord(record:Record,account: Account,block:(()->Unit)? = null){
+        if (record.type.isTransferType() && record.date.isBefore(account.initDate)){
+            showShortToast(MyApplication.context.resources.getString(R.string.err_msg_transfer_record_date,account.initDate.toString()))
+            return
+        }
         viewModelScope.launch {
             Repository.addRecord(record,account)
+            block?.invoke()
         }
     }
 
