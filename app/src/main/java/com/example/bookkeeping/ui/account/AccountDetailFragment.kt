@@ -16,6 +16,7 @@ import com.example.bookkeeping.data.room.entity.RecordType
 import com.example.bookkeeping.databinding.FragmentAccountDetailBinding
 import com.example.bookkeeping.ui.record.RecordAdapter
 import com.example.bookkeeping.ui.record.RecordFragment
+import com.example.bookkeeping.ui.record.RecordListFragment
 import com.example.bookkeeping.util.*
 import com.example.bookkeeping.view.SettingBar
 import java.util.UUID
@@ -109,11 +110,18 @@ class AccountDetailFragment : Fragment() {
         }
         viewModel.getRecordFlowById(accountId).observe(viewLifecycleOwner){
             if (binding.recordRv.adapter == null){
-                binding.recordRv.adapter = RecordAdapter(it)
+                val adapter = RecordAdapter(it)
+                adapter.setClickBlock { record ->
+                    jumpRecordFragment(record)
+                }
+                binding.recordRv.adapter = adapter
             } else {
                 val adapter =binding.recordRv.adapter as RecordAdapter
                 adapter.updateList(it)
             }
+        }
+        binding.moreTv.setOnClickListener {
+            jumpRecordListFragment()
         }
     }
 
@@ -122,10 +130,39 @@ class AccountDetailFragment : Fragment() {
             return
         }
         val bundle = Bundle().apply {
-            putParcelable(RecordFragment.ACCOUNT, mAccount)
-            putSerializable(RecordFragment.RECORD_TYPE, recordType)
+            with(RecordFragment){
+                putParcelable(ACCOUNT, mAccount)
+                putSerializable(RECORD_TYPE, recordType)
+                putInt(FROM, FROM_DETAIL)
+            }
         }
         findNavController().navigate(R.id.action_account_detail_to_record, bundle)
+    }
+
+    private fun jumpRecordFragment(record: Record) {
+        if (!::mAccount.isInitialized) {
+            return
+        }
+        val bundle = Bundle().apply {
+            with(RecordFragment){
+                putParcelable(ACCOUNT, mAccount)
+                putParcelable(RECORD, record)
+                putInt(FROM, FROM_DETAIL)
+            }
+        }
+        findNavController().navigate(R.id.action_account_detail_to_record, bundle)
+    }
+
+    private fun jumpRecordListFragment() {
+        if (!::mAccount.isInitialized) {
+            return
+        }
+        val bundle = Bundle().apply {
+            with(RecordListFragment){
+                putParcelable(ACCOUNT, mAccount)
+            }
+        }
+        findNavController().navigate(R.id.action_account_detail_to_record_list, bundle)
     }
 
 

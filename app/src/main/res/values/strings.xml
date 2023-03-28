@@ -27,6 +27,9 @@
     <string name="type_transfer_out">转出</string>
     <string name="transfer">转入/转出</string>
     <string name="update">更新资产</string>
+    <string name="title_transfer">资产进出</string>
+    <string name="transfer_in">转入资产</string>
+    <string name="transfer_out">转出资产</string>
     <string name="go_to_record">去记账</string>
     <string name="date">日期</string>
     <string name="account_asset_hint">请输入金额</string>
@@ -34,5 +37,9 @@
     <string name="init_asset">初始资产</string>
     <string name="args_exception">参数错误</string>
     <string name="record_type">记录类型</string>
+    <string name="record">更新记录</string>
     <string name="err_msg_transfer_record_date">转入/转出日期不能超过初始资产日期%1$s</string>
+    <string name="err_msg_update_init_record_date">初始资产日期不能更改%1$s</string>
+    <string name="more_records">查看更多</string>
+    <string name="record_detail">记录详情</string>
 </resources>

@@ -37,8 +37,20 @@ class MyDatePicker(context: Context, attrs: AttributeSet) : CardView(context, at
         datePickerDialog.show()
     }
 
+    fun updateDate(date: LocalDate) {
+        with(date) {
+            datePickerDialog.updateDate(year, monthValue - 1, dayOfMonth)
+            localDate = date
+            setDateText()
+        }
+    }
+
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         localDate = LocalDate.of(year, month + 1, dayOfMonth)
+        setDateText()
+    }
+
+    private fun setDateText() {
         val extra = if (LocalDate.now().isEqual(localDate)) {
             TODAY
         } else {

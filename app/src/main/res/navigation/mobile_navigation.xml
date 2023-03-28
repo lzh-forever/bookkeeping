@@ -48,10 +48,22 @@
         <action
             android:id="@+id/action_account_detail_to_account_setting"
             app:destination="@id/navigation_account_setting" />
+        <action
+            android:id="@+id/action_account_detail_to_record_list"
+            app:destination="@id/navigation_record_list" />
     </fragment>
 
     <fragment
         android:id="@+id/navigation_record"
         android:name="com.example.bookkeeping.ui.record.RecordFragment"
         tools:layout="@layout/fragment_record" />
+
+    <fragment
+        android:id="@+id/navigation_record_list"
+        android:name="com.example.bookkeeping.ui.record.RecordListFragment"
+        tools:layout="@layout/fragment_record_list" >
+        <action
+            android:id="@+id/action_record_list_to_record"
+            app:destination="@id/navigation_record" />
+    </fragment>
 </navigation>

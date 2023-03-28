@@ -19,7 +19,8 @@ data class Account(
     @ColumnInfo(name = "id") val id: UUID = UUID.randomUUID(),
     @PrimaryKey(autoGenerate = true) val databaseId: Int = 0,
     @ColumnInfo(name = "init_date") val initDate: LocalDate? = null,
-    @ColumnInfo(name = "init_asset") val initAsset:Double = 0.0
+    @ColumnInfo(name = "init_asset") val initAsset:Double = 0.0,
+    @ColumnInfo(name = "init_id") val initId: UUID? = null ,
 ) : Parcelable {
 }
 

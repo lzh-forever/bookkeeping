@@ -16,7 +16,7 @@ import com.example.bookkeeping.util.showShortToast
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class RecordViewModel: ViewModel() {
+class RecordViewModel : ViewModel() {
 
     val recordTypeLiveData = MutableLiveData<RecordType>()
 
@@ -35,18 +35,54 @@ class RecordViewModel: ViewModel() {
         }
     }
 
-    fun addRecord(record:Record,account: Account,block:(()->Unit)? = null){
-        if (record.type.isTransferType() && record.date.isBefore(account.initDate)){
-            showShortToast(MyApplication.context.resources.getString(R.string.err_msg_transfer_record_date,account.initDate.toString()))
+    fun addRecord(record: Record, account: Account, block: (() -> Unit)? = null) {
+        if (record.type.isTransferType() && record.date.isBefore(account.initDate)) {
+            showShortToast(
+                MyApplication.context.resources.getString(
+                    R.string.err_msg_transfer_record_date,
+                    account.initDate.toString()
+                )
+            )
             return
         }
         viewModelScope.launch {
-            Repository.addRecord(record,account)
+            Repository.addRecord(record, account)
             block?.invoke()
         }
     }
 
-    fun setRecordType(recordType: RecordType){
+    fun updateRecord(
+        originalRecord: Record, record: Record, account: Account, block: (() -> Unit)? = null
+    ) {
+        if (record.type.isTransferType() && record.date.isBefore(account.initDate)) {
+            showShortToast(
+                MyApplication.context.resources.getString(
+                    R.string.err_msg_transfer_record_date,
+                    account.initDate.toString()
+                )
+            )
+            return
+        }
+        if (record.id == account.initId && !record.date.isEqual(account.initDate)) {
+            showShortToast(
+                MyApplication.context.resources.getString(
+                    R.string.err_msg_update_init_record_date,
+                    account.initDate.toString()
+                )
+            )
+            return
+        }
+        if (originalRecord == record) {
+            block?.invoke()
+            return
+        }
+        viewModelScope.launch {
+            Repository.updateRecord(originalRecord, record, account)
+            block?.invoke()
+        }
+    }
+
+    fun setRecordType(recordType: RecordType) {
         recordTypeLiveData.value = recordType
     }
 

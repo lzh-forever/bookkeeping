@@ -21,16 +21,16 @@ interface RecordDao {
     @Query("SELECT * FROM records WHERE id = :id")
     suspend fun getRecordById(id: UUID): Record
 
-    @Query("SELECT * FROM records WHERE account_id = :accountId ORDER BY date ASC, create_time ASC")
+    @Query("SELECT * FROM records WHERE account_id = :accountId ORDER BY date ASC, update_time ASC")
     suspend fun getRecordsByAccountId(accountId: UUID): List<Record>
 
     @Query("SELECT * FROM records WHERE account_id = :accountId AND record_type = :type ORDER BY date DESC LIMIT 1")
     suspend fun getLatestRecordByAccountAndType(accountId: UUID, type: RecordType): Record?
 
-    @Query("SELECT * FROM records where account_id = :accountId ORDER BY date DESC, create_time DESC ")
+    @Query("SELECT * FROM records where account_id = :accountId ORDER BY date DESC, update_time DESC ")
     fun getRecordsReverseFlowByAccountId(accountId: UUID): Flow<List<Record>>
 
-    @Query("SELECT * FROM records where account_id = :accountId ORDER BY date DESC, create_time DESC LIMIT :limit ")
+    @Query("SELECT * FROM records where account_id = :accountId ORDER BY date DESC, update_time DESC LIMIT :limit ")
     fun getRecordsByAccountIdWithLimit(accountId: UUID, limit: Int): Flow<List<Record>>
 
 }

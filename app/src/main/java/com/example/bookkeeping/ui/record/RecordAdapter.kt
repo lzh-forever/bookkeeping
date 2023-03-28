@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.bookkeeping.data.room.entity.Account
 import com.example.bookkeeping.data.room.entity.Record
 import com.example.bookkeeping.databinding.ItemRecordBinding
 import com.example.bookkeeping.databinding.ItemRecordHeaderBinding
@@ -13,7 +14,7 @@ import com.example.bookkeeping.view.sectionedRecyclerview.SectionedRecyclerViewA
 
 class RecordAdapter(private var list: List<List<Record>>) :
     SectionedRecyclerViewAdapter<RecordAdapter.HeaderViewHolder, RecordAdapter.RecordViewHolder, RecyclerView.ViewHolder?>() {
-
+    private var block: ((Record) -> Unit)? = null
 
     inner class RecordViewHolder(binding: ItemRecordBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -54,12 +55,19 @@ class RecordAdapter(private var list: List<List<Record>>) :
             type.text = record.type.toString()
             amount.setHidableText(getFormattedDouble(record.amount))
         }
+        holder.itemView.setOnClickListener {
+            block?.invoke(record)
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateList(list: List<List<Record>>) {
         this.list = list
         notifyDataSetChanged()
+    }
+
+    fun setClickBlock(block: ((Record) -> Unit)?){
+        this.block = block
     }
 
     override fun hasFooterInSection(section: Int): Boolean = false

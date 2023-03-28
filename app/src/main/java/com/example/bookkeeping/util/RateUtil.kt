@@ -2,14 +2,12 @@ package com.example.bookkeeping.util
 
 import android.util.Log
 import com.example.bookkeeping.data.Repository
-import com.example.bookkeeping.data.room.entity.Account
 import com.example.bookkeeping.data.room.entity.Record
 import com.example.bookkeeping.data.room.entity.RecordType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.Math.pow
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 //需要按照时间从早到晚排列
@@ -18,37 +16,43 @@ import java.util.UUID
 
 private const val TAG = "RateUtil"
 
-suspend fun getXirrRate(accountId:UUID): Double {
-    return getXirrRate(Repository.getRecordList(accountId))
+suspend fun getXirrRate(accountId: UUID): Double {
+    return getXirrRateAndAccountInfo(accountId).first
 }
 
-suspend fun getXirrRate(list: List<Record>): Double {
+suspend fun getXirrRateAndAccountInfo(accountId: UUID):Triple<Double,Double,Double> {
+    return getXirrRateAndAccountInfo(Repository.getRecordList(accountId))
+}
+
+//三元组返回值为 xirr内部收益率，account总资产，account净投入
+suspend fun getXirrRateAndAccountInfo(list: List<Record>):Triple<Double,Double,Double>  {
     Log.d(TAG, list.toString())
     return withContext(Dispatchers.Default) {
-        val cashFlow = getXirrFlow(list)
-        var res = 0.0
+        val (cashFlow,totalAsset,netInvestment) = getXirrFlowAndAccountInfo(list)
+        var rate = 0.0
         try {
-            res = xirr(cashFlow)
+            rate = xirr(cashFlow)
         } catch (e: Exception) {
             try {
                 Log.d(TAG, e.toString())
-                res = xirrBisection(cashFlow)
+                rate = xirrBisection(cashFlow)
             } catch (e: Exception) {
                 Log.d(TAG, e.toString())
             }
         }
-        res
+        Triple(rate,totalAsset,netInvestment)
     }
 }
 
 
-private fun getXirrFlow(list: List<Record>): List<Pair<LocalDate, Double>> {
+private fun getXirrFlowAndAccountInfo(list: List<Record>): Triple<List<Pair<LocalDate, Double>>,Double,Double> {
     if (list.isEmpty()) {
-        return emptyList()
+        return Triple(emptyList(),0.0,0.0)
     }
     val res = ArrayList<Pair<LocalDate, Double>>()
     var record: Record
     var lastAmountIndex = 0
+    var netInvestment = 0.0
     for (i in list.lastIndex downTo 0) {
         record = list[i]
         if (record.type.isTransferType()) {
@@ -60,17 +64,18 @@ private fun getXirrFlow(list: List<Record>): List<Pair<LocalDate, Double>> {
     //初始资产
     record = list[0]
     res.add(record.date to record.amount * -1)
+    netInvestment += record.amount
     //中间过程的转入转出
     for (i in 1 until lastAmountIndex) {
         record = list[i]
         when (record.type) {
             RecordType.TRANSFER_IN -> {
                 res.add(record.date to record.amount * -1)
-
+                netInvestment += record.amount
             }
             RecordType.TRANSFER_OUT -> {
                 res.add(record.date to record.amount)
-
+                netInvestment -= record.amount
             }
             RecordType.CURRENT_AMOUNT -> {
             }
@@ -79,7 +84,8 @@ private fun getXirrFlow(list: List<Record>): List<Pair<LocalDate, Double>> {
     //当前资产
     record = list[lastAmountIndex]
     res.add(record.date to record.amount)
-    return res
+    val totalAsset: Double = record.amount
+    return Triple(res,totalAsset,netInvestment)
 }
 
 fun xirr(cashFlows: List<Pair<LocalDate, Double>>, guess: Double = 0.1): Double {
@@ -108,9 +114,9 @@ fun xirr(cashFlows: List<Pair<LocalDate, Double>>, guess: Double = 0.1): Double 
 
 
 fun xirrBisection(cashFlows: List<Pair<LocalDate, Double>>): Double {
-    var low = -1.0
-    var high = 1.0
-    var guess = 0.0
+    var low = -1000.0
+    var high = 1000.0
+    var guess: Double
     val epsilon = 0.00001
     var count = 0
 

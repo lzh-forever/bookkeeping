@@ -21,6 +21,6 @@ data class Record(
     @ColumnInfo(name = "account_id") val accountId: UUID,
     @ColumnInfo(name = "id") val id: UUID = UUID.randomUUID(),
     @PrimaryKey(autoGenerate = true) val databaseId: Int = 0,
-    @ColumnInfo(name = "create_time") val createTime:Long = System.currentTimeMillis()
+    @ColumnInfo(name = "update_time") var updateTime:Long = System.currentTimeMillis()
 ) : Parcelable {
 }
