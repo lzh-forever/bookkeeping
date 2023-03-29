@@ -1,4 +1,4 @@
-package com.example.bookkeeping.view.sectionedRecyclerview
+package com.example.bookkeeping.view
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView

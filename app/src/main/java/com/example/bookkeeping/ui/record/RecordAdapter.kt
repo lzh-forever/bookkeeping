@@ -4,13 +4,12 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.bookkeeping.data.room.entity.Account
 import com.example.bookkeeping.data.room.entity.Record
 import com.example.bookkeeping.databinding.ItemRecordBinding
 import com.example.bookkeeping.databinding.ItemRecordHeaderBinding
 import com.example.bookkeeping.util.getFormattedDouble
 
-import com.example.bookkeeping.view.sectionedRecyclerview.SectionedRecyclerViewAdapter
+import com.example.bookkeeping.view.SectionedRecyclerViewAdapter
 
 class RecordAdapter(private var list: List<List<Record>>) :
     SectionedRecyclerViewAdapter<RecordAdapter.HeaderViewHolder, RecordAdapter.RecordViewHolder, RecyclerView.ViewHolder?>() {

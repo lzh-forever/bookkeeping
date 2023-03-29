@@ -15,10 +15,16 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 object Repository {
-    val hideFlow = MutableStateFlow(false)
+    private val _hideFlow = MutableStateFlow(false)
+    val hideFlow: StateFlow<Boolean>
+        get() = _hideFlow
     private val database by lazy { AppDatabase.getInstance(MyApplication.context) }
     private val recordMap = ConcurrentHashMap<UUID, List<Record>>()
     private val mutex = Mutex()
+
+    fun changeHideFlowValue(){
+        _hideFlow.value = !_hideFlow.value
+    }
 
     fun getAccountListAndSum(): Flow<Triple<List<Account>, Double, Double>> =
         database.accountDao().getAllAccounts().flowOn(Dispatchers.IO).map { list ->
@@ -125,12 +131,20 @@ object Repository {
             )
             when (record.type) {
                 RecordType.CURRENT_AMOUNT -> {
-                    updateAccountWhenDeleteAmountRecord(record,account,latestAmountRecord!!)?.let {
+                    updateAccountWhenDeleteAmountRecord(
+                        record,
+                        account,
+                        latestAmountRecord!!
+                    )?.let {
                         database.accountDao().update(it)
                     }
                 }
-                else->{
-                    updateAccountWhenDeleteTransferRecord(record,account,latestAmountRecord!!).let {
+                else -> {
+                    updateAccountWhenDeleteTransferRecord(
+                        record,
+                        account,
+                        latestAmountRecord!!
+                    ).let {
                         database.accountDao().update(it)
                     }
                 }

@@ -58,7 +58,9 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:background="@null"
+                android:gravity="end"
                 android:hint="@string/account_asset_hint"
+                android:inputType="numberDecimal"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -119,10 +121,10 @@
         android:layout_marginTop="100dp"
         android:text="@string/confirm"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/transfer_card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility = "gone"/>
+        app:layout_constraintTop_toBottomOf="@+id/transfer_card"
+        tools:visibility="gone" />
 
     <ImageButton
         android:id="@+id/delete_btn"
@@ -132,9 +134,9 @@
         android:background="@android:drawable/ic_menu_delete"
         android:text="@string/confirm"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/transfer_card"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility = "visible"/>
+        app:layout_constraintTop_toBottomOf="@+id/transfer_card"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
