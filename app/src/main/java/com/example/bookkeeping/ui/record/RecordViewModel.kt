@@ -39,8 +39,7 @@ class RecordViewModel : ViewModel() {
         if (record.type.isTransferType() && record.date.isBefore(account.initDate)) {
             showShortToast(
                 MyApplication.context.resources.getString(
-                    R.string.err_msg_transfer_record_date,
-                    account.initDate.toString()
+                    R.string.err_msg_transfer_record_date, account.initDate.toString()
                 )
             )
             return
@@ -57,8 +56,7 @@ class RecordViewModel : ViewModel() {
         if (record.type.isTransferType() && record.date.isBefore(account.initDate)) {
             showShortToast(
                 MyApplication.context.resources.getString(
-                    R.string.err_msg_transfer_record_date,
-                    account.initDate.toString()
+                    R.string.err_msg_transfer_record_date, account.initDate.toString()
                 )
             )
             return
@@ -66,8 +64,7 @@ class RecordViewModel : ViewModel() {
         if (record.id == account.initId && !record.date.isEqual(account.initDate)) {
             showShortToast(
                 MyApplication.context.resources.getString(
-                    R.string.err_msg_update_init_record_date,
-                    account.initDate.toString()
+                    R.string.err_msg_update_init_record_date, account.initDate.toString()
                 )
             )
             return
@@ -78,6 +75,20 @@ class RecordViewModel : ViewModel() {
         }
         viewModelScope.launch {
             Repository.updateRecord(originalRecord, record, account)
+            block?.invoke()
+        }
+    }
+
+    fun deleteRecord(
+        record: Record, account: Account, block: (() -> Unit)? = null
+    ) {
+        if (record.id == account.initId) {
+            showShortToast(MyApplication.context.resources.getString(R.string.err_msg_delete_init_record))
+            return
+        }
+
+        viewModelScope.launch {
+            Repository.deleteRecord(record, account)
             block?.invoke()
         }
     }

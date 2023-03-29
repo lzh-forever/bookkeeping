@@ -118,6 +118,46 @@ suspend fun updateAccountWhenUpdateAmountRecord(record: Record, account: Account
     )
 }
 
+suspend fun updateAccountWhenDeleteAmountRecord(
+    record: Record,
+    account: Account,
+    latestAmountRecord: Record
+): Account? {
+    //初始资产不可删除，中间资产删除不影响，后面的资产删除后可能影响转入转出
+    if (beforeComparedRecord(record, latestAmountRecord)) {
+        return null
+    }
+    val (rate, totalAsset, netInvestment) = getXirrRateAndAccountInfo(account.id)
+    return account.copy(netInvestment = netInvestment, totalAsset = totalAsset, rate = rate)
+}
+
+
+suspend fun updateAccountWhenDeleteTransferRecord(
+    record: Record, account: Account, latestAmountRecord: Record
+): Account {
+    val sign = if (record.type == RecordType.TRANSFER_IN) 1 else -1
+    val amount = sign * record.amount
+    var asset = account.totalAsset
+    var netInvestment = account.netInvestment
+    var recalculate = false
+
+    if (beforeComparedRecord(record, latestAmountRecord)) {
+        //之前只影响净投入
+        netInvestment -= amount
+        recalculate = true
+    } else {
+        //之后影响净投入和最新资产，但不用计算收益率
+        asset -= amount
+        netInvestment -= amount
+    }
+    val rate = if (recalculate) {
+        getXirrRate(account.id)
+    } else {
+        account.rate
+    }
+    return account.copy(netInvestment = netInvestment, totalAsset = asset, rate = rate)
+}
+
 fun beforeComparedRecord(record: Record, comparedRecord: Record): Boolean {
     return record.date.isBefore(comparedRecord.date) || (record.date.isEqual(comparedRecord.date) && record.updateTime < comparedRecord.updateTime)
 }

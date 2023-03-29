@@ -5,10 +5,7 @@ import com.example.bookkeeping.data.room.AppDatabase
 import com.example.bookkeeping.data.room.entity.Account
 import com.example.bookkeeping.data.room.entity.Record
 import com.example.bookkeeping.data.room.entity.RecordType
-import com.example.bookkeeping.util.updateAccountWhenInsertAmountRecord
-import com.example.bookkeeping.util.updateAccountWhenInsertTransferRecord
-import com.example.bookkeeping.util.updateAccountWhenUpdateAmountRecord
-import com.example.bookkeeping.util.updateAccountWhenUpdateTransferRecord
+import com.example.bookkeeping.util.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
@@ -60,7 +57,7 @@ object Repository {
             // 如果缓存中不存在记录列表，则从数据库中查询记录列表
             val databaseRecords = database.recordDao().getRecordsByAccountId(accountId)
             // 将查询到的记录列表存储到缓存中
-            cacheRecordList(accountId, databaseRecords)
+            recordMap[accountId] = databaseRecords
             return databaseRecords
         }
     }
@@ -69,16 +66,6 @@ object Repository {
         return getRecordList(accountId).reversed().groupBy { it.date }.map { it.value }
     }
 
-    fun cacheRecordList(accountId: UUID, list: List<Record>) {
-        recordMap[accountId] = list
-    }
-
-    private suspend fun insertRecord(record: Record) {
-        withContext(Dispatchers.Default) {
-            addAndUpdateCache(record)
-        }
-        database.recordDao().insert(record)
-    }
 
     suspend fun addRecord(record: Record, account: Account) {
         withContext(Dispatchers.IO) {
@@ -130,12 +117,47 @@ object Repository {
         }
     }
 
+    suspend fun deleteRecord(record: Record, account: Account) {
+        withContext(Dispatchers.IO) {
+            removeRecord(record)
+            val latestAmountRecord = database.recordDao().getLatestRecordByAccountAndType(
+                account.id, RecordType.CURRENT_AMOUNT
+            )
+            when (record.type) {
+                RecordType.CURRENT_AMOUNT -> {
+                    updateAccountWhenDeleteAmountRecord(record,account,latestAmountRecord!!)?.let {
+                        database.accountDao().update(it)
+                    }
+                }
+                else->{
+                    updateAccountWhenDeleteTransferRecord(record,account,latestAmountRecord!!).let {
+                        database.accountDao().update(it)
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun insertRecord(record: Record) {
+        withContext(Dispatchers.Default) {
+            addAndUpdateCache(record)
+        }
+        database.recordDao().insert(record)
+    }
+
     private suspend fun updateRecord(originalRecord: Record, record: Record) {
         withContext(Dispatchers.Default) {
             removeAndUpdateCache(originalRecord)
             addAndUpdateCache(record)
         }
         database.recordDao().update(record)
+    }
+
+    private suspend fun removeRecord(record: Record) {
+        withContext(Dispatchers.Default) {
+            removeAndUpdateCache(record)
+        }
+        database.recordDao().delete(record)
     }
 
     private suspend fun addAndUpdateCache(record: Record) {
@@ -151,7 +173,7 @@ object Repository {
                     break
                 }
                 for (i in index..list.lastIndex) {
-                    val r =list[i]
+                    val r = list[i]
                     if (r.date == record.date && r.updateTime <= record.updateTime) {
                         index++
                         continue

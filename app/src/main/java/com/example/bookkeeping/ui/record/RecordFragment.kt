@@ -69,11 +69,11 @@ class RecordFragment : Fragment() {
         return binding.root
     }
 
-    private fun initRecordDetail(){
+    private fun initRecordDetail() {
         record?.let {
             binding.datePicker.updateDate(it.date)
             binding.assetTv.setText(getFormattedDouble(it.amount))
-            if (it.type.isTransferType()){
+            if (it.type.isTransferType()) {
                 binding.transferTv.text = it.type.toString()
             }
         }
@@ -84,18 +84,33 @@ class RecordFragment : Fragment() {
         if (viewModel.recordTypeLiveData.value == null) {
             return
         }
-        binding.recordBtn.setOnClickListener {
-            val record = Record(
-                date = binding.datePicker.localDate,
-                type = viewModel.recordTypeLiveData.value!!,
-                amount = binding.assetTv.text.toString().toDouble(),
-                accountId = account.id,
-                id = UUID.randomUUID()
-            )
-            viewModel.addRecord(record, account) {
-                findNavController().navigateUp()
+        if (record == null) {
+            //添加record
+            binding.recordBtn.visibility = View.VISIBLE
+            binding.recordBtn.setOnClickListener {
+                val record = Record(
+                    date = binding.datePicker.localDate,
+                    type = viewModel.recordTypeLiveData.value!!,
+                    amount = binding.assetTv.text.toString().toDouble(),
+                    accountId = account.id,
+                    id = UUID.randomUUID()
+                )
+                viewModel.addRecord(record, account) {
+                    findNavController().navigateUp()
+                }
+            }
+        } else {
+            //更新record
+            binding.deleteBtn.visibility = View.VISIBLE
+            binding.deleteBtn.setOnClickListener {
+                record?.let {
+                    viewModel.deleteRecord(it, account) {
+                        findNavController().navigateUp()
+                    }
+                }
             }
         }
+
 
         if (viewModel.recordTypeLiveData.value!!.isTransferType()) {
             binding.transferCard.visibility = View.VISIBLE
@@ -148,7 +163,7 @@ class RecordFragment : Fragment() {
                                 amount = binding.assetTv.text.toString().toDouble(),
                                 updateTime = System.currentTimeMillis()
                             )
-                            viewModel.updateRecord(it,updateRecord, account) {
+                            viewModel.updateRecord(it, updateRecord, account) {
                                 findNavController().navigateUp()
                             }
                         }

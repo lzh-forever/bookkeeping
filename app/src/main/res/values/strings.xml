@@ -40,6 +40,7 @@
     <string name="record">更新记录</string>
     <string name="err_msg_transfer_record_date">转入/转出日期不能超过初始资产日期%1$s</string>
     <string name="err_msg_update_init_record_date">初始资产日期不能更改%1$s</string>
+    <string name="err_msg_delete_init_record">初始资产不能删除</string>
     <string name="more_records">查看更多</string>
     <string name="record_detail">记录详情</string>
 </resources>
