@@ -105,6 +105,7 @@ class AccountDetailFragment : Fragment() {
     }
 
     private fun initRecord() {
+        viewModel.getRecordById(accountId)
         binding.recordRv.apply {
             layoutManager = LinearLayoutManager(context)
         }
@@ -123,6 +124,15 @@ class AccountDetailFragment : Fragment() {
         binding.moreTv.setOnClickListener {
             jumpRecordListFragment()
         }
+
+        viewModel.recordListLiveData.observe(viewLifecycleOwner){
+            Log.d(TAG,it.toString())
+        }
+
+        viewModel.rateLiveData.observe(viewLifecycleOwner){
+            Log.d(TAG,it.toString())
+        }
+
     }
 
     private fun jumpRecordFragment(recordType: RecordType) {

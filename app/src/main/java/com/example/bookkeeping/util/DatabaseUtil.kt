@@ -4,6 +4,8 @@ import com.example.bookkeeping.data.room.entity.Account
 import com.example.bookkeeping.data.room.entity.Record
 import com.example.bookkeeping.data.room.entity.RecordType
 
+//latest指插入前的上一个，这里主要用于判断初始资产，插入后自己不早于自己，前后都一样
+//增加accountInit信息后也可以利用init信息判断，这样插入前后的latest都可以使用
 suspend fun updateAccountWhenInsertAmountRecord(
     account: Account, record: Record, latestAmountRecord: Record?
 ): Account? = if (latestAmountRecord == null) {
@@ -34,11 +36,11 @@ suspend fun updateAccountWhenInsertAmountRecord(
     }
 }
 
+//transfer类型不影响LastAmount,前后都不影响
 suspend fun updateAccountWhenInsertTransferRecord(
     account: Account, record: Record, latestAmountRecord: Record
 ): Account {
-    val sign = if (record.type == RecordType.TRANSFER_IN) 1 else -1
-    val amount = sign * record.amount
+    val amount = getTransferRecordAmount(record)
     var asset = account.totalAsset
     var netInvestment = account.netInvestment
     var recalculate = false
@@ -58,13 +60,12 @@ suspend fun updateAccountWhenInsertTransferRecord(
     return account.copy(netInvestment = netInvestment, totalAsset = asset, rate = rate)
 }
 
+//transfer类型不影响LastAmount,前后都不影响
 suspend fun updateAccountWhenUpdateTransferRecord(
     originalRecord: Record, record: Record, account: Account, latestAmountRecord: Record
 ): Account? {
-    val sign1 = if (originalRecord.type == RecordType.TRANSFER_IN) 1 else -1
-    val sign2 = if (record.type == RecordType.TRANSFER_IN) 1 else -1
-    val amount1 = originalRecord.amount * sign1
-    val amount2 = record.amount * sign2
+    val amount1 = getTransferRecordAmount(originalRecord)
+    val amount2 = getTransferRecordAmount(record)
     var asset = account.totalAsset
     var netInvestment = account.netInvestment
     var recalculate = false
@@ -118,6 +119,10 @@ suspend fun updateAccountWhenUpdateAmountRecord(record: Record, account: Account
     )
 }
 
+//如果是删除前的最后，早于最后一个不影响，晚于即自己是最后，需要计算
+//如果是删除后的最后：
+//1.删除的是自己，那么肯定晚于现在的最后，需要计算 2.删除的不是自己，最后一个和删除前一样
+//查找的顺序不影响
 suspend fun updateAccountWhenDeleteAmountRecord(
     record: Record,
     account: Account,
@@ -132,11 +137,11 @@ suspend fun updateAccountWhenDeleteAmountRecord(
 }
 
 
+//transfer类型不影响LastAmount,前后都不影响
 suspend fun updateAccountWhenDeleteTransferRecord(
     record: Record, account: Account, latestAmountRecord: Record
 ): Account {
-    val sign = if (record.type == RecordType.TRANSFER_IN) 1 else -1
-    val amount = sign * record.amount
+    val amount = getTransferRecordAmount(record)
     var asset = account.totalAsset
     var netInvestment = account.netInvestment
     var recalculate = false
