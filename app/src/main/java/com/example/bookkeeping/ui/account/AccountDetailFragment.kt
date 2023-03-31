@@ -108,29 +108,38 @@ class AccountDetailFragment : Fragment() {
         viewModel.getRecordById(accountId)
         binding.recordRv.apply {
             layoutManager = LinearLayoutManager(context)
-        }
-        viewModel.getRecordFlowById(accountId).observe(viewLifecycleOwner){
-            if (binding.recordRv.adapter == null){
-                val adapter = RecordAdapter(it)
-                adapter.setClickBlock { record ->
-                    jumpRecordFragment(record)
-                }
-                binding.recordRv.adapter = adapter
-            } else {
-                val adapter =binding.recordRv.adapter as RecordAdapter
-                adapter.updateList(it)
+            val adapter = RecordAdapter(emptyList())
+            adapter.setClickBlock { record ->
+                jumpRecordFragment(record)
             }
+            this.adapter = adapter
+            isNestedScrollingEnabled = false
+        }
+        viewModel.getRecordFlowById(accountId).observe(viewLifecycleOwner) {
+            val adapter = binding.recordRv.adapter as RecordAdapter
+            adapter.updateList(it)
         }
         binding.moreTv.setOnClickListener {
             jumpRecordListFragment()
         }
 
-        viewModel.recordListLiveData.observe(viewLifecycleOwner){
-            Log.d(TAG,it.toString())
+        viewModel.recordListLiveData.observe(viewLifecycleOwner) {
+            Log.d(TAG, it.toString())
         }
 
-        viewModel.rateLiveData.observe(viewLifecycleOwner){
-            Log.d(TAG,it.toString())
+        viewModel.rateLiveData.observe(viewLifecycleOwner) {
+            Log.d(TAG, it.toString())
+//            val entries = ArrayList<Entry>()
+//            val t0 = it.last().first.toEpochDay() - it.first().first.toEpochDay()
+//            for (item in it) {
+//                val t = item.first.toEpochDay() - it.first().first.toEpochDay()
+//                entries.add(Entry(t * 1.0f / t0, item.second.toFloat()))
+//            }
+//            val lineDataSet = LineDataSet(entries, "label")
+//            val lineData = LineData(lineDataSet)
+//            binding.chart.data = lineData
+//            binding.chart.invalidate()
+            binding.chart.setData(getChartData(it))
         }
 
     }
@@ -140,7 +149,7 @@ class AccountDetailFragment : Fragment() {
             return
         }
         val bundle = Bundle().apply {
-            with(RecordFragment){
+            with(RecordFragment) {
                 putParcelable(ACCOUNT, mAccount)
                 putSerializable(RECORD_TYPE, recordType)
                 putInt(FROM, FROM_DETAIL)
@@ -154,7 +163,7 @@ class AccountDetailFragment : Fragment() {
             return
         }
         val bundle = Bundle().apply {
-            with(RecordFragment){
+            with(RecordFragment) {
                 putParcelable(ACCOUNT, mAccount)
                 putParcelable(RECORD, record)
                 putInt(FROM, FROM_DETAIL)
@@ -168,7 +177,7 @@ class AccountDetailFragment : Fragment() {
             return
         }
         val bundle = Bundle().apply {
-            with(RecordListFragment){
+            with(RecordListFragment) {
                 putParcelable(ACCOUNT, mAccount)
             }
         }

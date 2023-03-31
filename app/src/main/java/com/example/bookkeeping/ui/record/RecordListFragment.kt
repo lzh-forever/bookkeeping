@@ -66,18 +66,15 @@ class RecordListFragment : Fragment() {
         viewModel.getRecordById(account.id)
         binding.recordRv.apply {
             layoutManager = LinearLayoutManager(context)
+            val adapter = RecordAdapter(emptyList())
+            adapter.setClickBlock { record ->
+                jumpRecordFragment(record)
+            }
+            this.adapter = adapter
         }
         viewModel.recordListLiveData.observe(viewLifecycleOwner) {
-            if (binding.recordRv.adapter == null) {
-                val adapter = RecordAdapter(it)
-                adapter.setClickBlock { record ->
-                    jumpRecordFragment(record)
-                }
-                binding.recordRv.adapter = adapter
-            } else {
-                val adapter = binding.recordRv.adapter as RecordAdapter
-                adapter.updateList(it)
-            }
+            val adapter = binding.recordRv.adapter as RecordAdapter
+            adapter.updateList(it)
         }
     }
 
@@ -86,7 +83,7 @@ class RecordListFragment : Fragment() {
             return
         }
         val bundle = Bundle().apply {
-            with(RecordFragment){
+            with(RecordFragment) {
                 putParcelable(ACCOUNT, account)
                 putParcelable(RECORD, record)
                 putInt(FROM, FROM_DETAIL)

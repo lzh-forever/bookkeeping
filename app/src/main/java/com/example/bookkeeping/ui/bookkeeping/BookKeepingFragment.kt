@@ -32,6 +32,7 @@ class BookKeepingFragment : Fragment() {
         binding.accountRv.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = AccountAdapter(emptyList())
+            isNestedScrollingEnabled = false
         }
         viewModel.getAccountListAndSum()
         observeLiveData()

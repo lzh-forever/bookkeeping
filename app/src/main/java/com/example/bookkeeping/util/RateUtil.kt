@@ -114,7 +114,7 @@ fun xirr(cashFlows: List<Pair<LocalDate, Double>>, guess: Double = 0.1): Double 
 
 
 fun xirrBisection(cashFlows: List<Pair<LocalDate, Double>>): Double {
-    var low = -1000.0
+    var low = -1.0
     var high = 1000.0
     var guess: Double
     val epsilon = 0.00001
