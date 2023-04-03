@@ -43,4 +43,7 @@
     <string name="err_msg_delete_init_record">初始资产不能删除</string>
     <string name="more_records">查看更多</string>
     <string name="record_detail">记录详情</string>
+    <string name="legend_rate">收益率·资金加权</string>
+    <string name="chart_title">收益率</string>
+    <string name="chart_detail_rate">收益率·资金加权 %1$s</string>
 </resources>

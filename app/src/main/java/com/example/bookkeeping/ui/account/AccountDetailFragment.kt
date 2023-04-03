@@ -129,17 +129,7 @@ class AccountDetailFragment : Fragment() {
 
         viewModel.rateLiveData.observe(viewLifecycleOwner) {
             Log.d(TAG, it.toString())
-//            val entries = ArrayList<Entry>()
-//            val t0 = it.last().first.toEpochDay() - it.first().first.toEpochDay()
-//            for (item in it) {
-//                val t = item.first.toEpochDay() - it.first().first.toEpochDay()
-//                entries.add(Entry(t * 1.0f / t0, item.second.toFloat()))
-//            }
-//            val lineDataSet = LineDataSet(entries, "label")
-//            val lineData = LineData(lineDataSet)
-//            binding.chart.data = lineData
-//            binding.chart.invalidate()
-            binding.chart.setData(getChartData(it))
+            binding.chartLayout.setData(getChartData(it))
         }
 
     }

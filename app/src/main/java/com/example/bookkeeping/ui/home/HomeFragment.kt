@@ -35,7 +35,7 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
         binding.button.setOnClickListener {
             hide = !hide
-            Repository.hideFlow.value = hide
+//            Repository.hideFlow.value = hide
         }
         binding.button2.setOnClickListener {
             binding.hidableText.setHidableText(binding.textHome.text)

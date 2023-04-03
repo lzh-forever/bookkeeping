@@ -1,4 +1,4 @@
-package com.example.bookkeeping.view
+package com.example.bookkeeping.view.chart
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,10 +9,13 @@ import android.view.MotionEvent
 import android.view.View
 import com.example.bookkeeping.R
 import com.example.bookkeeping.util.getBaselineHeight
+import com.example.bookkeeping.util.getBaselineYForCenter
 import com.example.bookkeeping.util.getTextHeight
 import com.example.bookkeeping.util.getTextWidth
+import com.example.bookkeeping.view.DisallowInterceptTouchListener
 import java.time.LocalDate
 import kotlin.math.ceil
+import kotlin.math.max
 
 class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -20,15 +23,7 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         setOnTouchListener(DisallowInterceptTouchListener())
     }
 
-    private val margin = 10f
-    private val marginTop = 10f
-        get() = if (field != 0f) field else margin
-    private val marginBottom = 10f
-        get() = if (field != 0f) field else margin
-    private val marginStart = 10f
-        get() = if (field != 0f) field else margin
-    private val marginEnd = 10f
-        get() = if (field != 0f) field else margin
+    private val space = 10f
 
     private val num = 4
 
@@ -53,7 +48,7 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         color = Color.BLACK
         textAlign = Paint.Align.RIGHT
     }
-    private val mYAxisTextWidth = 150f
+    private var mYAxisTextWidth = 0f
 
     private val mTextPaint = Paint().apply {
         isAntiAlias = true
@@ -97,7 +92,7 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var focusY = 0f
     private var focused = false
 
-    private var focusBlock: ((LocalDate, Double) -> Unit)? = null
+    private val listeners: MutableList<PointSelectedListener> = ArrayList()
 
 
     override fun onDraw(canvas: Canvas) {
@@ -113,14 +108,15 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        Log.d(TAG, "action: ${event.action}")
         return when (event.action) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                 setFocus(event.x, event.y)
                 true
             }
             MotionEvent.ACTION_UP -> {
-                focused = false
-                true
+                onPointCanceled()
+                false
             }
             else -> super.onTouchEvent(event)
         }
@@ -133,13 +129,14 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
 
-    fun setFocusBlock(focusBlock: ((LocalDate, Double) -> Unit)?) {
-        this.focusBlock = focusBlock
+    fun setPointSelectedListener(listener: PointSelectedListener) {
+        listeners.add(listener)
     }
 
     private fun drawLine(canvas: Canvas) {
         transformedData?.let {
             drawYAxis(canvas)
+            drawDate(canvas)
             path.reset()
             var data = it[0]
             var (x, y) = data
@@ -168,15 +165,27 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         }
     }
 
+    private fun drawDate(canvas: Canvas) {
+        val y =
+            getChartEndY() + mYAxisTextPaint.getTextHeight() * 0.5f + mYAxisTextPaint.getBaselineHeight()
+        endDate?.let {
+            canvas.drawText(it.toString(), getChartEndX(), y, mYAxisTextPaint)
+        }
+        startDate?.let {
+            mYAxisTextPaint.textAlign = Paint.Align.LEFT
+            canvas.drawText(it.toString(), getChartStartX(), y, mYAxisTextPaint)
+        }
+        mYAxisTextPaint.textAlign = Paint.Align.RIGHT
+    }
+
     //todo text位置文字
     private fun drawLaterShowText(canvas: Canvas) {
         val centerX = width / 2f
         val centerY = height / 2f
-        val text = "Hello World"
+        val text = "下周记账后开始展示"
         val textWidth = mTextPaint.getTextWidth(text)
-        val textHeight = mTextPaint.getTextHeight()
         val textX = centerX - textWidth / 2f
-        val textY = centerY + textHeight / 2f
+        val textY = mTextPaint.getBaselineYForCenter(centerY) - 30
         canvas.drawText(text, textX, textY, mTextPaint)
     }
 
@@ -194,6 +203,7 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     lastY = posY
                     continue
                 }
+                val lastFocusX = focusX
                 //离posX近
                 if (lastX + posX < 2 * x) {
                     focusX = posX
@@ -202,8 +212,9 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
                     focusX = lastX
                     focusY = lastY
                 }
-                focused = true
-                invalidate()
+                if (lastFocusX != focusX) {
+                    onPointSelected()
+                }
                 break
             }
         }
@@ -220,14 +231,30 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         canvas.drawPath(path, mDottedLinePaint)
         canvas.drawCircle(focusX, focusY, r2, mOuterCirclePaint)
         canvas.drawCircle(focusX, focusY, r1, mInnerCirclePaint)
+    }
+
+    private fun onPointSelected() {
+        focused = true
         transformedData?.let { pointList ->
-            val index = pointList.indexOf(Pair(focusX,focusY))
+            val index = pointList.indexOf(Pair(focusX, focusY))
             data?.let {
                 val pair = it[index]
-                focusBlock?.invoke(pair.first,pair.second)
+                for (listener in listeners) {
+                    listener.onPointSelected(pair.first, pair.second)
+                }
             }
         }
+        invalidate()
+    }
 
+    private fun onPointCanceled() {
+        focused = false
+        focusX = 0f
+        focusY = 0f
+        for (listener in listeners) {
+            listener.onPointCanceled()
+        }
+        invalidate()
     }
 
 
@@ -238,6 +265,7 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         startDate = data.first().first
         endDate = data.last().first
         computeYAxis(data)
+        measureYAxisWidth()
         transformedData = data.map {
             val pair = Pair(getXFromDate(it.first), getYFromRate(it.second))
             val point = getDataPoint(pair)
@@ -272,12 +300,22 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         return Pair(getChartStartX() + offsetX, getChartStartY() + offsetY)
     }
 
+    private fun measureYAxisWidth() {
+        mYAxisTextWidth = 0f
+        for (i in 0..num) {
+            val rate = yUpRate - unit * i
+            val text = "$rate.00%"
+            mYAxisTextWidth = max(mYAxisTextWidth, mYAxisTextPaint.getTextWidth(text))
+        }
+        Log.d(TAG, "mYAxisTextWidth：$mYAxisTextWidth")
+    }
+
     private fun getYAxisTextAndPoint(index: Int): Triple<String, Float, Float> {
         val rate = yUpRate - unit * index
         val text = "$rate.00%"
-        val textX = getChartStartX()
+        val textX = getChartStartX() - space
         val offsetY = getChartHeight() / num
-        val textY = margin + mYAxisTextPaint.getBaselineHeight() + offsetY * index
+        val textY = mYAxisTextPaint.getBaselineHeight() + offsetY * index
         Log.d(
             TAG,
             "width:${mYAxisTextPaint.getTextWidth(text)}, height: ${mYAxisTextPaint.getTextHeight()}"
@@ -291,11 +329,11 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun getChartStartX(): Float {
-        return margin + mYAxisTextWidth
+        return mYAxisTextWidth + space
     }
 
     private fun getChartEndX(): Float {
-        return width - margin
+        return width.toFloat()
     }
 
     private fun getChartWidth(): Float {
@@ -303,11 +341,11 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     }
 
     private fun getChartStartY(): Float {
-        return margin + mYAxisTextPaint.getTextHeight() / 2
+        return mYAxisTextPaint.getTextHeight() / 2
     }
 
     private fun getChartEndY(): Float {
-        return height - margin - mYAxisTextPaint.getTextHeight() / 2
+        return height - mYAxisTextPaint.getTextHeight() * 2
     }
 
     private fun getChartHeight(): Float {
@@ -316,6 +354,12 @@ class ChartView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     companion object {
         const val TAG = "ChartView"
+    }
+
+    interface PointSelectedListener {
+        fun onPointSelected(date: LocalDate, rate: Double)
+
+        fun onPointCanceled()
     }
 
 }
