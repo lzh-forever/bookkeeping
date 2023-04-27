@@ -34,11 +34,13 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
         binding.button.setOnClickListener {
-            hide = !hide
+//            hide = !hide
 //            Repository.hideFlow.value = hide
+            homeViewModel.restore()
         }
         binding.button2.setOnClickListener {
-            binding.hidableText.setHidableText(binding.textHome.text)
+//            binding.hidableText.setHidableText(binding.textHome.text)
+            homeViewModel.test()
         }
         return root
     }
@@ -58,4 +60,10 @@ class HomeFragment : Fragment() {
         super.onDestroy()
         Log.d(TAG,"onDestroy")
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d(TAG,"onSaveInstanceState")
+    }
+
 }

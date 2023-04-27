@@ -1,7 +1,6 @@
 package com.example.bookkeeping.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +13,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.bookkeeping.R
 import com.example.bookkeeping.databinding.ActivityMainBinding
+import com.example.bookkeeping.util.loadUserInfo
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,13 +27,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initBottomNavigation()
+        loadUserInfo()
     }
 
     private fun initBottomNavigation() {
         val navView: BottomNavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         val bottomSet =
-            setOf(R.id.navigation_home, R.id.navigation_bookkeeping, R.id.navigation_notifications)
+            setOf(R.id.navigation_home, R.id.navigation_bookkeeping, R.id.navigation_mine)
         val appBarConfiguration = AppBarConfiguration(bottomSet)
         navController.addOnDestinationChangedListener(object :
             NavController.OnDestinationChangedListener {

@@ -28,10 +28,14 @@
     </fragment>
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.bookkeeping.ui.notifications.NotificationsFragment"
+        android:id="@+id/navigation_mine"
+        android:name="com.example.bookkeeping.ui.mine.MineFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_mine" >
+        <action
+            android:id="@+id/action_mine_to_login"
+            app:destination="@id/navigation_login" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_account_setting"
@@ -66,4 +70,19 @@
             android:id="@+id/action_record_list_to_record"
             app:destination="@id/navigation_record" />
     </fragment>
+
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="com.example.bookkeeping.ui.mine.LoginFragment"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_login_to_register"
+            app:destination="@id/navigation_register" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_register"
+        android:name="com.example.bookkeeping.ui.mine.RegisterFragment"
+        tools:layout="@layout/fragment_register" />
+
 </navigation>

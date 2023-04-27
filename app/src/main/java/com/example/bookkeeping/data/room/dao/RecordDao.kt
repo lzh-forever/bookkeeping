@@ -12,11 +12,20 @@ interface RecordDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(record: Record)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(records: List<Record>)
+
     @Update
     suspend fun update(record: Record)
 
     @Delete
     suspend fun delete(record: Record)
+
+    @Query("DELETE FROM records")
+    suspend fun deleteAll()
+
+    @Query("SELECT * FROM records")
+    suspend fun getAllRecords(): List<Record>
 
     @Query("SELECT * FROM records WHERE id = :id")
     suspend fun getRecordById(id: UUID): Record
